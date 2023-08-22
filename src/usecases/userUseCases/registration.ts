@@ -21,6 +21,11 @@ interface identification {
     file: Express.Multer.File;
 }
 
+interface userImage{
+    userId : ObjectId
+    file : Express.Multer.File
+}
+
 export default {
     checkUser: async (mobile: number) => {
         try {
@@ -71,7 +76,7 @@ export default {
             console.log(newUserData,"newuserdattaaa");
             
 
-            const response = await userRepository.update_identification(newUserData);
+            const response = await userRepository.updateIdentification(newUserData);
             if(response?.email)
             return ({message:"Success"})
             else
@@ -80,4 +85,25 @@ export default {
             return error;
         }
     },
+
+    userimage_update : async(userData : userImage)=>{
+        try {
+            const {userId,file} = userData
+            const  imageUrl = await uploadToS3(file)
+
+            const newUserData = {
+                userId,
+                imageUrl
+            }
+
+            const response = await userRepository.updateUserImage(newUserData)
+            if(response?.email){
+                return ({message : "Success"})
+            }else{
+                return ({message : "User not found"})
+            }
+        } catch (error) {
+            throw new Error((error as Error).message)
+        }
+    }
 };

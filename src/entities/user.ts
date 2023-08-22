@@ -5,11 +5,11 @@ export interface UserInterface extends Document {
     email: string;
     mobile: number;
     password: string;
-    // image: Image;
+    userImage: string;
     referral_code: string;
-    // id_type: string;
-    // id: string;
-    // id_image: IdImage;
+    id_type: string;
+    id: string;
+    id_image: string;
     account_status: string;
     verified: boolean;
     identification: boolean;
@@ -42,16 +42,9 @@ const UserSchema: Schema = new Schema({
         type: String,
         required: true,
     },
-    // image: {
-    //     public_id: {
-    //         type: String,
-    //         required: true,
-    //     },
-    //     url: {
-    //         type: String,
-    //         required: true,
-    //     },
-    // },
+    userImage:{
+        type:String
+    },
     referral_code: {
         type: String,
     },

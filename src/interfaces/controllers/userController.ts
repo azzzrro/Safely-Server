@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, response } from "express";
 import registration from "../../usecases/userUseCases/registration";
 
 
@@ -63,4 +63,25 @@ export default {
         }
         
     },
+
+    uploadUserImage : async(req:Request,res:Response)=>{
+        const userId = req.userId
+        
+        try {
+            if(userId && req.file){
+                const userData = {
+                    userId,
+                    file:req.file
+                }
+                
+                const respose = await registration.userimage_update(userData)
+                res.json(respose)
+            }else{
+                res.json(response)
+            }
+        } catch (error) {
+            res.json((error as Error).message)
+        }
+
+    }
 };

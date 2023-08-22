@@ -63,7 +63,7 @@ exports.default = {
                 imageUrl
             };
             console.log(newUserData, "newuserdattaaa");
-            const response = yield userRepository_1.default.update_identification(newUserData);
+            const response = yield userRepository_1.default.updateIdentification(newUserData);
             if (response === null || response === void 0 ? void 0 : response.email)
                 return ({ message: "Success" });
             else
@@ -73,4 +73,24 @@ exports.default = {
             return error;
         }
     }),
+    userimage_update: (userData) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { userId, file } = userData;
+            const imageUrl = yield (0, awsS3_1.default)(file);
+            const newUserData = {
+                userId,
+                imageUrl
+            };
+            const response = yield userRepository_1.default.updateUserImage(newUserData);
+            if (response === null || response === void 0 ? void 0 : response.email) {
+                return ({ message: "Success" });
+            }
+            else {
+                return ({ message: "User not found" });
+            }
+        }
+        catch (error) {
+            throw new Error(error.message);
+        }
+    })
 };

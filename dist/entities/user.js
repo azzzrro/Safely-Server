@@ -49,16 +49,9 @@ const UserSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
-    // image: {
-    //     public_id: {
-    //         type: String,
-    //         required: true,
-    //     },
-    //     url: {
-    //         type: String,
-    //         required: true,
-    //     },
-    // },
+    userImage: {
+        type: String
+    },
     referral_code: {
         type: String,
     },

@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
 const registration_1 = __importDefault(require("../../usecases/userUseCases/registration"));
 exports.default = {
     signup: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -67,4 +68,23 @@ exports.default = {
             res.json(error);
         }
     }),
+    uploadUserImage: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const userId = req.userId;
+        try {
+            if (userId && req.file) {
+                const userData = {
+                    userId,
+                    file: req.file
+                };
+                const respose = yield registration_1.default.userimage_update(userData);
+                res.json(respose);
+            }
+            else {
+                res.json(express_1.response);
+            }
+        }
+        catch (error) {
+            res.json(error.message);
+        }
+    })
 };

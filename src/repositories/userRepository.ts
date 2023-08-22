@@ -16,6 +16,11 @@ interface Identification {
     imageUrl: string;
 }
 
+interface userImage{
+    userId : ObjectId
+    imageUrl : string
+}
+
 export default {
     findUser: async (mobile: number) => {
         const result = await user.findOne({ mobile: mobile });
@@ -38,7 +43,7 @@ export default {
         }
     },
 
-    update_identification: async (userData: Identification) => {
+    updateIdentification: async (userData: Identification) => {
         const { userId, chooseID, enterID, imageUrl } = userData;
         console.log(userData, "query dattaaaa");
 
@@ -54,9 +59,27 @@ export default {
             {
                 new: true,
             }
-        );
-        console.log(response,"after databaseeeeeeeeee");
-        
+        );        
         return response;
     },
+
+    updateUserImage : async(userData :userImage)=>{
+        try {
+            const {userId,imageUrl} = userData
+            const response = await user.findByIdAndUpdate(userId,{
+                $set:{
+                    userImage:imageUrl,
+                    identification:true
+                },
+            },
+            {
+                new:true
+            }
+            )
+            return response
+
+        } catch (error) {
+            throw new Error((error as Error).message)
+        }
+    }
 };

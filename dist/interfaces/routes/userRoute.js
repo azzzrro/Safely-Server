@@ -11,4 +11,5 @@ const userRoute = (0, express_1.Router)();
 userRoute.post('/register', userController_1.default.signup);
 userRoute.post('/checkUser', userController_1.default.checkUser);
 userRoute.post('/identification', auth_1.default.verifyToken, multer_1.default.single('idImage'), userController_1.default.identificationUpdate);
+userRoute.post('/uploadUserImage', auth_1.default.verifyToken, multer_1.default.single('userImage'), userController_1.default.uploadUserImage);
 exports.default = userRoute;

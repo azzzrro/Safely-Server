@@ -34,7 +34,7 @@ exports.default = {
             return error.message;
         }
     }),
-    update_identification: (userData) => __awaiter(void 0, void 0, void 0, function* () {
+    updateIdentification: (userData) => __awaiter(void 0, void 0, void 0, function* () {
         const { userId, chooseID, enterID, imageUrl } = userData;
         console.log(userData, "query dattaaaa");
         const response = yield user_1.default.findByIdAndUpdate(userId, {
@@ -46,7 +46,23 @@ exports.default = {
         }, {
             new: true,
         });
-        console.log(response, "after databaseeeeeeeeee");
         return response;
     }),
+    updateUserImage: (userData) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { userId, imageUrl } = userData;
+            const response = yield user_1.default.findByIdAndUpdate(userId, {
+                $set: {
+                    userImage: imageUrl,
+                    identification: true
+                },
+            }, {
+                new: true
+            });
+            return response;
+        }
+        catch (error) {
+            throw new Error(error.message);
+        }
+    })
 };
