@@ -12,18 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const user_1 = __importDefault(require("../entities/user"));
+const driver_1 = __importDefault(require("../entities/driver"));
 exports.default = {
-    findUser: (mobile) => __awaiter(void 0, void 0, void 0, function* () {
-        const result = yield user_1.default.findOne({ mobile: mobile });
+    findDriver: (mobile) => __awaiter(void 0, void 0, void 0, function* () {
+        const result = yield driver_1.default.findOne({ mobile: mobile });
         return result;
     }),
-    GoogleFindUser: (email) => __awaiter(void 0, void 0, void 0, function* () {
-        const result = yield user_1.default.findOne({ email: email });
-        return result;
-    }),
-    saveUser: (userData) => __awaiter(void 0, void 0, void 0, function* () {
-        const newUser = new user_1.default({
+    saveDriver: (userData) => __awaiter(void 0, void 0, void 0, function* () {
+        const newDriver = new driver_1.default({
             name: userData.name,
             email: userData.email,
             mobile: userData.mobile,
@@ -31,34 +27,39 @@ exports.default = {
             referral_code: userData.referral_code,
         });
         try {
-            const savedUser = yield newUser.save();
-            return savedUser;
+            const savedDriver = yield newDriver.save();
+            return savedDriver;
         }
         catch (error) {
             return error.message;
         }
     }),
-    updateIdentification: (userData) => __awaiter(void 0, void 0, void 0, function* () {
-        const { userId, chooseID, enterID, imageUrl } = userData;
-        console.log(userData, "query dattaaaa");
-        const response = yield user_1.default.findByIdAndUpdate(userId, {
+    updateIdentification: (driverData) => __awaiter(void 0, void 0, void 0, function* () {
+        const { driverId, aadharID, licenseID, aadharImageUrl, licenseImageUrl } = driverData;
+        console.log(driverData, "query dattaaaa");
+        const response = yield driver_1.default.findByIdAndUpdate(driverId, {
             $set: {
-                id_type: chooseID,
-                id: enterID,
-                id_image: imageUrl,
+                aadhar: {
+                    aadharId: aadharID,
+                    aadharImage: aadharImageUrl
+                },
+                license: {
+                    licenseId: licenseID,
+                    licenseImage: licenseImageUrl
+                }
             },
         }, {
             new: true,
         });
         return response;
     }),
-    updateUserImage: (userData) => __awaiter(void 0, void 0, void 0, function* () {
+    updateDriverImage: (driverData) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const { userId, imageUrl } = userData;
-            const response = yield user_1.default.findByIdAndUpdate(userId, {
+            const { driverId, imageUrl } = driverData;
+            const response = yield driver_1.default.findByIdAndUpdate(driverId, {
                 $set: {
-                    userImage: imageUrl,
-                    identification: true
+                    driverImage: imageUrl,
+                    // identification:true
                 },
             }, {
                 new: true

@@ -1,5 +1,5 @@
-import { Request, Response, response } from "express";
-import registration from "../../usecases/userUseCases/registration";
+import { Request, Response } from "express";
+import registration from "../../../usecases/userUseCases/registration";
 
 
 
@@ -17,7 +17,6 @@ export default {
         try {
             const response = await registration.personal_details(userData);
             console.log(response, "responseee");
-
             res.json(response);
         } catch (error) {
             res.status(500).json({ error: (error as Error).message });
@@ -39,8 +38,10 @@ export default {
         
         const { chooseID, enterID } = req.body;
 
-        const userId = req.userId; 
-
+        const userId = req.clientId;
+        
+        console.log(chooseID,enterID,userId);
+        
         try {
             
             if (userId && req.file) {
@@ -65,7 +66,7 @@ export default {
     },
 
     uploadUserImage : async(req:Request,res:Response)=>{
-        const userId = req.userId
+        const userId = req.clientId
         
         try {
             if(userId && req.file){
@@ -74,10 +75,10 @@ export default {
                     file:req.file
                 }
                 
-                const respose = await registration.userimage_update(userData)
-                res.json(respose)
-            }else{
+                const response = await registration.userimage_update(userData)
                 res.json(response)
+            }else{
+                res.json({message:"Something error"})
             }
         } catch (error) {
             res.json((error as Error).message)

@@ -27,6 +27,11 @@ export default {
         return result;
     },
 
+    GoogleFindUser: async (email: string) => {
+        const result = await user.findOne({ email: email });
+        return result;
+    },
+
     saveUser: async (userData: registration) => {
         const newUser = new user({
             name: userData.name,

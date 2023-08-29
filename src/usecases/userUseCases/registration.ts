@@ -59,8 +59,11 @@ export default {
             referral_code: referral_code,
         };
         const response = await userRepository.saveUser(newUserData);
+        if(typeof response !== "string" && response._id){
+            const token = await auth.createToken(response._id.toString())
+            return ({message:"Success",token});
+        }
 
-        return response;
     },
 
     identification_update: async (userData: identification) => {

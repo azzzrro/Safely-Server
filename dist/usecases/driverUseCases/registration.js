@@ -12,26 +12,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const userRepository_1 = __importDefault(require("../../repositories/userRepository"));
+const driverRepository_1 = __importDefault(require("../../repositories/driverRepository"));
+const auth_1 = __importDefault(require("../../middlewares/auth"));
 const referralCode_1 = require("../../utilities/referralCode");
 const bcrypt_1 = __importDefault(require("../../services/bcrypt"));
-const auth_1 = __importDefault(require("../../middlewares/auth"));
 const awsS3_1 = __importDefault(require("../../services/awsS3"));
 exports.default = {
-    checkUser: (mobile) => __awaiter(void 0, void 0, void 0, function* () {
+    checkDriver: (mobile) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const response = yield userRepository_1.default.findUser(mobile);
+            const response = yield driverRepository_1.default.findDriver(mobile);
             if (response) {
                 if (response.identification) {
-                    return { message: "User login" };
+                    return { message: "Driver login" };
                 }
                 else {
                     const token = yield auth_1.default.createToken(response._id.toString());
                     console.log(response._id.toString());
-                    return { message: "User must fill documents", token };
+                    return { message: "Driver must fill documents", token };
                 }
             }
-            return "User not registered";
+            return "Driver not registered";
         }
         catch (error) {
             return { message: error.message };
@@ -42,31 +42,33 @@ exports.default = {
         console.log(reffered_Code);
         const referral_code = (0, referralCode_1.refferalCode)();
         const hashedPassword = yield bcrypt_1.default.securePassword(password);
-        const newUserData = {
+        const newDriverData = {
             name,
             email,
             mobile,
             password: hashedPassword,
             referral_code: referral_code,
         };
-        const response = yield userRepository_1.default.saveUser(newUserData);
-        if (typeof response !== "string" && response._id) {
+        const response = yield driverRepository_1.default.saveDriver(newDriverData);
+        if (typeof response !== "string" && response.email) {
             const token = yield auth_1.default.createToken(response._id.toString());
-            return ({ message: "Success", token });
+            return { message: "Success", token };
         }
     }),
-    identification_update: (userData) => __awaiter(void 0, void 0, void 0, function* () {
-        const { userId, chooseID, enterID, file } = userData;
+    identification_update: (driverData) => __awaiter(void 0, void 0, void 0, function* () {
+        const { driverId, aadharID, licenseID, aadharFile, licenseFile } = driverData;
         try {
-            const imageUrl = yield (0, awsS3_1.default)(file);
-            const newUserData = {
-                userId,
-                chooseID,
-                enterID,
-                imageUrl
+            const aadharImageUrl = yield (0, awsS3_1.default)(aadharFile);
+            const licenseImageUrl = yield (0, awsS3_1.default)(licenseFile);
+            const newDriverData = {
+                driverId,
+                aadharID,
+                licenseID,
+                aadharImageUrl,
+                licenseImageUrl
             };
-            console.log(newUserData, "newuserdattaaa");
-            const response = yield userRepository_1.default.updateIdentification(newUserData);
+            console.log(newDriverData, "newuserdattaaa");
+            const response = yield driverRepository_1.default.updateIdentification(newDriverData);
             if (response === null || response === void 0 ? void 0 : response.email)
                 return ({ message: "Success" });
             else
@@ -76,15 +78,15 @@ exports.default = {
             return error;
         }
     }),
-    userimage_update: (userData) => __awaiter(void 0, void 0, void 0, function* () {
+    driverImage_update: (driverData) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const { userId, file } = userData;
+            const { driverId, file } = driverData;
             const imageUrl = yield (0, awsS3_1.default)(file);
-            const newUserData = {
-                userId,
+            const newDriverData = {
+                driverId,
                 imageUrl
             };
-            const response = yield userRepository_1.default.updateUserImage(newUserData);
+            const response = yield driverRepository_1.default.updateDriverImage(newDriverData);
             if (response === null || response === void 0 ? void 0 : response.email) {
                 return ({ message: "Success" });
             }

@@ -14,14 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 exports.default = {
-    createToken: (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    createToken: (clientId) => __awaiter(void 0, void 0, void 0, function* () {
         const jwtSecretKey = "t9rXw5bF2mS7zQ8p";
-        const token = jsonwebtoken_1.default.sign({ userId }, jwtSecretKey);
+        const token = jsonwebtoken_1.default.sign({ clientId }, jwtSecretKey);
         return token;
     }),
     verifyToken: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         var _a;
-        console.log(19);
         const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
         if (!token) {
             res.json({ message: "Unauthorized" });
@@ -30,7 +29,7 @@ exports.default = {
             try {
                 const jwtSecretKey = "t9rXw5bF2mS7zQ8p";
                 const decodedToken = jsonwebtoken_1.default.verify(token, jwtSecretKey);
-                req.userId = decodedToken.userId;
+                req.clientId = decodedToken.clientId;
                 next();
             }
             catch (error) {

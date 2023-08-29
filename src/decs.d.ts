@@ -5,7 +5,7 @@ import {ObjectId} from 'mongodb'
 declare global {
     namespace Express {
         interface Request {
-            userId?: ObjectId; // Add your custom property here
+            clientId?: ObjectId; // Add your custom property here
         }
     }
 }
