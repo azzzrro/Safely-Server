@@ -26,6 +26,7 @@ interface userImage{
     file : Express.Multer.File
 }
 
+
 export default {
     checkUser: async (mobile: number) => {
         try {

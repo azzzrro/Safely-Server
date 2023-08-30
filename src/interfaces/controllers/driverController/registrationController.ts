@@ -81,14 +81,21 @@ export default {
     },
 
     locationUpdate: async (req: Request, res: Response) => {
-        const driverId = req.clientId
-
+        const driverId = req.clientId;
+        console.log("helloooo");
+        
         try {
-            if(driverId){
-                const {latitude,longitude} = req.body;
-                
+            if (driverId) {
+                const { latitude, longitude } = req.body;
+
+                const data = {
+                    driverId,
+                    latitude,
+                    longitude,
+                };
+                const response = await registration.location_update(data);
+                res.json(response);
             }
-            
         } catch (error) {
             res.json((error as Error).message);
         }

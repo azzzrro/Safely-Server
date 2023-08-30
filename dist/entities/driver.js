@@ -63,6 +63,14 @@ const DriverSchema = new mongoose_1.Schema({
             type: String
         }
     },
+    location: {
+        longitude: {
+            type: String
+        },
+        latitude: {
+            type: String
+        }
+    },
     account_status: {
         type: String,
         default: "Good",

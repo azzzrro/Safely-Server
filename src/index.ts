@@ -6,6 +6,7 @@ import {v4 as uuidv4} from 'uuid'
 import connectDB from './config/mongo';
 import userRoute from './interfaces/routes/userRoute';
 import driverRouter from './interfaces/routes/driverRoute';
+import adminRoute from './interfaces/routes/adminRoute';
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.use(
 
 app.use('/',userRoute)
 app.use('/driver',driverRouter)
+app.use('/admin' , adminRoute)
 
 const port = 3000;
 

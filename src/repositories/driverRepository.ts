@@ -17,14 +17,19 @@ interface Identification {
     licenseImageUrl: string;
 }
 
-interface driverImage{
-    driverId : ObjectId
-    imageUrl : string
+interface driverImage {
+    driverId: ObjectId;
+    imageUrl: string;
 }
 
 export default {
     findDriver: async (mobile: number) => {
         const result = await driver.findOne({ mobile: mobile });
+        return result;
+    },
+
+    GoogleFindDriver: async (email: string) => {
+        const result = await driver.findOne({ email: email });
         return result;
     },
 
@@ -52,41 +57,63 @@ export default {
             driverId,
             {
                 $set: {
-                    aadhar:{
-                        aadharId:aadharID,
-                        aadharImage: aadharImageUrl
+                    aadhar: {
+                        aadharId: aadharID,
+                        aadharImage: aadharImageUrl,
                     },
-                    license:{
-                        licenseId:licenseID,
-                        licenseImage:licenseImageUrl
-                    }
+                    license: {
+                        licenseId: licenseID,
+                        licenseImage: licenseImageUrl,
+                    },
                 },
             },
             {
                 new: true,
             }
-        );        
+        );
         return response;
     },
 
-
-    updateDriverImage : async(driverData :driverImage)=>{
+    updateDriverImage: async (driverData: driverImage) => {
         try {
-            const {driverId,imageUrl} = driverData
-            const response = await driver.findByIdAndUpdate(driverId,{
-                $set:{
-                    driverImage:imageUrl,
-                    // identification:true
+            const { driverId, imageUrl } = driverData;
+            const response = await driver.findByIdAndUpdate(
+                driverId,
+                {
+                    $set: {
+                        driverImage: imageUrl,
+                    },
                 },
-            },
-            {
-                new:true
-            }
-            )
-            return response
-
+                {
+                    new: true,
+                }
+            );
+            return response;
         } catch (error) {
-            throw new Error((error as Error).message)
+            throw new Error((error as Error).message);
         }
-    }
-}
+    },
+
+    updateDriverLocation: async (longitude: number, latitude: number, driverId: ObjectId) => {
+        try {
+            const response = await driver.findByIdAndUpdate(
+                driverId,
+                {
+                    $set: {
+                        location: {
+                            longitude: longitude,
+                            latitude: latitude,
+                        },
+                        identification: true
+                    },
+                },
+                {
+                    new: true,
+                }
+            );
+            return response;
+        } catch (error) {
+            throw new Error((error as Error).message);
+        }
+    },
+};

@@ -1,15 +1,15 @@
+import driverRepository from "../../repositories/driverRepository";
 import auth from "../../middlewares/auth";
-import userRepository from "../../repositories/userRepository";
 
-export default {
-    loginCheckUser: async (mobile: number) => {
-        const response = await userRepository.findUser(mobile);
+export default{
+    loginCheckDriver : async (mobile: number) => {
+        const response = await driverRepository.findDriver(mobile);
         if (response?.mobile) {
             if(response.verified){
                 return { message: "Success" };
             }else if(!response.identification){
                 const token = await auth.createToken(response._id.toString());
-                return { message: "Incomplete registration",token};
+                return { message: "Incomplete registration",token };
             }
             else{
                 return { message: "Not verified" };
@@ -17,8 +17,9 @@ export default {
         } else return { message: "No user found" };
     },
 
-    GoogleLoginCheckUser: async (email: string) => {
-        const response = await userRepository.GoogleFindUser(email);
+
+    GoogleLoginCheckDriver: async (email: string) => {
+        const response = await driverRepository.GoogleFindDriver(email);
         if (response?.email) {
             const token = await auth.createToken(response._id.toString());
             if(response.verified){
@@ -31,4 +32,6 @@ export default {
             }
         } else return { message: "No user found" };
     },
-};
+}
+
+

@@ -12,11 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const driverRepository_1 = __importDefault(require("../../repositories/driverRepository"));
 const auth_1 = __importDefault(require("../../middlewares/auth"));
-const userRepository_1 = __importDefault(require("../../repositories/userRepository"));
 exports.default = {
-    loginCheckUser: (mobile) => __awaiter(void 0, void 0, void 0, function* () {
-        const response = yield userRepository_1.default.findUser(mobile);
+    loginCheckDriver: (mobile) => __awaiter(void 0, void 0, void 0, function* () {
+        const response = yield driverRepository_1.default.findDriver(mobile);
         if (response === null || response === void 0 ? void 0 : response.mobile) {
             if (response.verified) {
                 return { message: "Success" };
@@ -32,8 +32,8 @@ exports.default = {
         else
             return { message: "No user found" };
     }),
-    GoogleLoginCheckUser: (email) => __awaiter(void 0, void 0, void 0, function* () {
-        const response = yield userRepository_1.default.GoogleFindUser(email);
+    GoogleLoginCheckDriver: (email) => __awaiter(void 0, void 0, void 0, function* () {
+        const response = yield driverRepository_1.default.GoogleFindDriver(email);
         if (response === null || response === void 0 ? void 0 : response.email) {
             const token = yield auth_1.default.createToken(response._id.toString());
             if (response.verified) {

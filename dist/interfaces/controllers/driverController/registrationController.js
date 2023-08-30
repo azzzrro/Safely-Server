@@ -90,9 +90,17 @@ exports.default = {
     }),
     locationUpdate: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const driverId = req.clientId;
+        console.log("helloooo");
         try {
             if (driverId) {
                 const { latitude, longitude } = req.body;
+                const data = {
+                    driverId,
+                    latitude,
+                    longitude,
+                };
+                const response = yield registration_1.default.location_update(data);
+                res.json(response);
             }
         }
         catch (error) {

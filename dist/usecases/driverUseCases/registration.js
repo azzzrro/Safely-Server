@@ -97,5 +97,20 @@ exports.default = {
         catch (error) {
             throw new Error(error.message);
         }
+    }),
+    location_update: (locationData) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { longitude, latitude, driverId } = locationData;
+            const response = yield driverRepository_1.default.updateDriverLocation(longitude, latitude, driverId);
+            if (response === null || response === void 0 ? void 0 : response.email) {
+                return ({ message: "Success" });
+            }
+            else {
+                return ({ message: "User not found" });
+            }
+        }
+        catch (error) {
+            throw new Error(error.message);
+        }
     })
 };

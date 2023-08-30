@@ -27,6 +27,13 @@ interface driverImage{
     file : Express.Multer.File
 }
 
+interface LocationData{
+    longitude:number
+    latitude:number
+    driverId:ObjectId
+}
+
+
 export default{
     checkDriver: async (mobile: number) => {
         try {
@@ -104,6 +111,21 @@ export default{
             }
 
             const response = await driverRepository.updateDriverImage(newDriverData)
+            if(response?.email){
+                return ({message : "Success"})
+            }else{
+                return ({message : "User not found"})
+            }
+        } catch (error) {
+            throw new Error((error as Error).message)
+        }
+    },
+
+    location_update : async(locationData : LocationData)=>{
+        try {
+            const {longitude,latitude,driverId} = locationData
+            
+            const response = await driverRepository.updateDriverLocation(longitude,latitude,driverId)
             if(response?.email){
                 return ({message : "Success"})
             }else{

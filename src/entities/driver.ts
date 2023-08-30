@@ -8,6 +8,7 @@ export interface DriverInterface extends Document {
     driverImage: string;
     referral_code: string;
     aadhar: Aadhar
+    location: Location
     license: License
     account_status: string;
     verified: boolean;
@@ -22,6 +23,11 @@ interface Aadhar {
 interface License {
     id:string,
     image:string
+}
+
+interface Location {
+    longitude : number
+    latitude : number
 }
 
 const DriverSchema: Schema = new Schema({
@@ -62,6 +68,15 @@ const DriverSchema: Schema = new Schema({
             type:String
         },
         licenseImage:{
+            type:String
+        }
+    },
+
+    location:{
+        longitude: {
+            type:String
+        },
+        latitude: {
             type:String
         }
     },

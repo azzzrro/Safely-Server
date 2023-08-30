@@ -18,6 +18,10 @@ exports.default = {
         const result = yield driver_1.default.findOne({ mobile: mobile });
         return result;
     }),
+    GoogleFindDriver: (email) => __awaiter(void 0, void 0, void 0, function* () {
+        const result = yield driver_1.default.findOne({ email: email });
+        return result;
+    }),
     saveDriver: (userData) => __awaiter(void 0, void 0, void 0, function* () {
         const newDriver = new driver_1.default({
             name: userData.name,
@@ -41,12 +45,12 @@ exports.default = {
             $set: {
                 aadhar: {
                     aadharId: aadharID,
-                    aadharImage: aadharImageUrl
+                    aadharImage: aadharImageUrl,
                 },
                 license: {
                     licenseId: licenseID,
-                    licenseImage: licenseImageUrl
-                }
+                    licenseImage: licenseImageUrl,
+                },
             },
         }, {
             new: true,
@@ -59,15 +63,33 @@ exports.default = {
             const response = yield driver_1.default.findByIdAndUpdate(driverId, {
                 $set: {
                     driverImage: imageUrl,
-                    // identification:true
                 },
             }, {
-                new: true
+                new: true,
             });
             return response;
         }
         catch (error) {
             throw new Error(error.message);
         }
-    })
+    }),
+    updateDriverLocation: (longitude, latitude, driverId) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const response = yield driver_1.default.findByIdAndUpdate(driverId, {
+                $set: {
+                    location: {
+                        longitude: longitude,
+                        latitude: latitude,
+                    },
+                    identification: true
+                },
+            }, {
+                new: true,
+            });
+            return response;
+        }
+        catch (error) {
+            throw new Error(error.message);
+        }
+    }),
 };
