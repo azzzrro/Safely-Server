@@ -11,7 +11,6 @@ export interface DriverInterface extends Document {
     location: Location
     license: License
     account_status: string;
-    verified: boolean;
     identification: boolean;
 }
 
@@ -83,11 +82,7 @@ const DriverSchema: Schema = new Schema({
 
     account_status: {
         type: String,
-        default: "Good",
-    },
-    verified: {
-        type: Boolean,
-        default: false,
+        default: "Pending",
     },
     identification: {
         type: Boolean,

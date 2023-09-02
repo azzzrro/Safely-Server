@@ -73,11 +73,7 @@ const DriverSchema = new mongoose_1.Schema({
     },
     account_status: {
         type: String,
-        default: "Good",
-    },
-    verified: {
-        type: Boolean,
-        default: false,
+        default: "Pending",
     },
     identification: {
         type: Boolean,

@@ -5,8 +5,10 @@ export default {
     loginCheckUser: async (mobile: number) => {
         const response = await userRepository.findUser(mobile);
         if (response?.mobile) {
-            if(response.verified){
+            if(response.account_status !== "Pending" && response.account_status === "Rejected"){
                 return { message: "Success" };
+            }else if(response.account_status === "Rejected"){
+                return { message: "Rejected" };
             }else if(!response.identification){
                 const token = await auth.createToken(response._id.toString());
                 return { message: "Incomplete registration",token};
@@ -21,8 +23,10 @@ export default {
         const response = await userRepository.GoogleFindUser(email);
         if (response?.email) {
             const token = await auth.createToken(response._id.toString());
-            if(response.verified){
+            if(response.account_status !== "Pending" && response.account_status === "Rejected"){
                 return { message: "Success", token };
+            }else if(response.account_status === "Rejected"){
+                return { message: "Rejected" };
             }else if(!response.identification){
                 return { message: "Incomplete registration" ,token};
             }

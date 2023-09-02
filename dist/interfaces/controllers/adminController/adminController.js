@@ -35,19 +35,69 @@ exports.default = {
     }),
     verifyDriver: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const id = req.query.id;
-        console.log("insidee funvtion", id);
         try {
             const response = yield driver_1.default.findByIdAndUpdate(id, {
                 $set: {
-                    account_status: "Verified",
+                    account_status: "Good",
                 },
             }, {
                 new: true,
             });
             if (response === null || response === void 0 ? void 0 : response.email) {
-                const subject = "Account verified successfully";
+                const subject = "Account Verified Successfully";
                 const text = `Hello ${response.name}, 
-                Thank you for registering with safely! We're excited to have you on board. Your account has been successfully verified, and you're now ready to enjoy the convenience of our cab booking platform.`;
+                Thank you for registering with safely! We're excited to have you on board. Your account has been successfully verified.
+                
+                Thank you for choosing Safely. We look forward to serving you and making your journeys safe and convenient.
+                
+                Best regards,
+                Safely India`;
+                try {
+                    yield (0, nodemailer_1.sendMail)(response.email, subject, text);
+                    res.json({ message: "Success" });
+                }
+                catch (error) {
+                    console.log(error);
+                    res.json(error.message);
+                }
+            }
+            else {
+                res.json("Somthing error");
+            }
+        }
+        catch (error) {
+            res.json(error);
+        }
+    }),
+    verifiedDrivers: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const verifiedDrivers = yield driver_1.default.find({ account_status: { $nin: ["Pending", "Rejected"] } });
+        res.json(verifiedDrivers);
+    }),
+    rejectDriver: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const id = req.query.id;
+        const reason = req.body.reason;
+        try {
+            const response = yield driver_1.default.findByIdAndUpdate(id, {
+                $set: {
+                    account_status: "Rejected",
+                },
+            }, {
+                new: true,
+            });
+            if (response === null || response === void 0 ? void 0 : response.email) {
+                const subject = "Account Registration Rejected";
+                const text = `Hello ${response.name}, 
+                We regret to inform you that your registration with Safely has been rejected. We appreciate your interest, 
+                but unfortunately, we are unable to accept your application at this time.
+                
+                Reason : ${reason}
+
+                You have the option to resubmit your registration and provide any missing or updated information.
+
+                If you have any questions or need further information, please feel free to contact our support team.
+                
+                Sincerely,
+                Safely India`;
                 try {
                     yield (0, nodemailer_1.sendMail)(response.email, subject, text);
                     res.json({ message: "Success" });
