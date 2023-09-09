@@ -13,6 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const registration_1 = __importDefault(require("../../../usecases/driverUseCases/registration"));
+const awsS3_1 = __importDefault(require("../../../services/awsS3"));
+const driver_1 = __importDefault(require("../../../entities/driver"));
 exports.default = {
     checkDriver: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { mobile } = req.body;
@@ -90,7 +92,6 @@ exports.default = {
     }),
     locationUpdate: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const driverId = req.clientId;
-        console.log("helloooo");
         try {
             if (driverId) {
                 const { latitude, longitude } = req.body;
@@ -107,4 +108,37 @@ exports.default = {
             res.json(error.message);
         }
     }),
+    vehicleUpdate: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            console.log("inside vehicleeeee");
+            const { registerationID, model } = req.body;
+            const files = req.files;
+            const driverId = req.clientId;
+            console.log(registerationID, model, driverId);
+            const rcImageUrl = yield (0, awsS3_1.default)(files["rcImage"][0]);
+            const carImageUrl = yield (0, awsS3_1.default)(files["carImage"][0]);
+            const response = yield driver_1.default.findByIdAndUpdate(driverId, {
+                $set: {
+                    vehicle_details: {
+                        registerationID,
+                        model,
+                        rcImageUrl,
+                        carImageUrl
+                    }
+                }
+            }, {
+                new: true
+            });
+            console.log(response, "vehickeeee");
+            if (response === null || response === void 0 ? void 0 : response.email) {
+                res.json({ message: "Success" });
+            }
+            else {
+                res.json({ message: "Something Error" });
+            }
+        }
+        catch (error) {
+            res.json(error.message);
+        }
+    })
 };

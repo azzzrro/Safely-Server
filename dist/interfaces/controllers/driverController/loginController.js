@@ -16,7 +16,6 @@ const login_1 = __importDefault(require("../../../usecases/driverUseCases/login"
 exports.default = {
     loginDriverCheck: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { mobile } = req.body;
-        console.log(mobile, "mobileeee");
         try {
             const response = yield login_1.default.loginCheckDriver(mobile);
             res.json(response);
@@ -27,7 +26,6 @@ exports.default = {
     }),
     GoogleLoginDriverCheck: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { email } = req.body;
-        console.log(email, "mobileeee");
         try {
             const response = yield login_1.default.GoogleLoginCheckDriver(email);
             res.json(response);

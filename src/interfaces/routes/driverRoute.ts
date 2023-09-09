@@ -19,7 +19,12 @@ driverRouter.post('/identification',auth.verifyToken, upload.fields([
 
 driverRouter.post('/uploadDriverImage' ,auth.verifyToken, upload.single('driverImage'), registrationController.uploadDriverImage)
 driverRouter.post('/location',auth.verifyToken,registrationController.locationUpdate)
+driverRouter.post('/vehicleDetails',auth.verifyToken,upload.fields([
+    { name: 'carImage', maxCount: 1 },
+    { name: 'rcImage', maxCount: 1 },
+  ]), registrationController.vehicleUpdate)
 
+  
 // login
 driverRouter.post('/checkLoginDriver',loginController.loginDriverCheck)
 driverRouter.post('/checkGoogleLoginDriver',loginController.GoogleLoginDriverCheck)

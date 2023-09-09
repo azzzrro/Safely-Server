@@ -18,14 +18,17 @@ exports.default = {
     loginCheckDriver: (mobile) => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield driverRepository_1.default.findDriver(mobile);
         if (response === null || response === void 0 ? void 0 : response.mobile) {
-            if (response.account_status !== "Pending" && response.account_status === "Rejected") {
-                return { message: "Success" };
+            const token = yield auth_1.default.createToken(response._id.toString());
+            if (response.account_status !== "Pending" && response.account_status !== "Rejected" && response.account_status !== "Blocked") {
+                return { message: "Success", token };
             }
             else if (response.account_status === "Rejected") {
-                return { message: "Rejected" };
+                return { message: "Rejected", token };
+            }
+            else if (response.account_status === "Blocked") {
+                return { message: "Blocked" };
             }
             else if (!response.identification) {
-                const token = yield auth_1.default.createToken(response._id.toString());
                 return { message: "Incomplete registration", token };
             }
             else {
@@ -39,11 +42,14 @@ exports.default = {
         const response = yield driverRepository_1.default.GoogleFindDriver(email);
         if (response === null || response === void 0 ? void 0 : response.email) {
             const token = yield auth_1.default.createToken(response._id.toString());
-            if (response.account_status !== "Pending" && response.account_status === "Rejected") {
+            if (response.account_status !== "Pending" && response.account_status !== "Rejected" && response.account_status !== "Blocked") {
                 return { message: "Success", token };
             }
             else if (response.account_status === "Rejected") {
-                return { message: "Rejected" };
+                return { message: "Rejected", token };
+            }
+            else if (response.account_status === "Blocked") {
+                return { message: "Blocked" };
             }
             else if (!response.identification) {
                 return { message: "Incomplete registration", token };

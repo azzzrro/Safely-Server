@@ -74,7 +74,8 @@ export default {
             const response = await user.findByIdAndUpdate(userId,{
                 $set:{
                     userImage:imageUrl,
-                    identification:true
+                    identification:true,
+                    account_status : "Pending"
                 },
             },
             {

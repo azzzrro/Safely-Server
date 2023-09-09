@@ -58,7 +58,8 @@ exports.default = {
             const response = yield user_1.default.findByIdAndUpdate(userId, {
                 $set: {
                     userImage: imageUrl,
-                    identification: true
+                    identification: true,
+                    account_status: "Pending"
                 },
             }, {
                 new: true

@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import registration from "../../../usecases/driverUseCases/registration";
+import uploadToS3 from "../../../services/awsS3";
+import driver from "../../../entities/driver";
 
 export default {
     checkDriver: async (req: Request, res: Response) => {
@@ -82,7 +84,6 @@ export default {
 
     locationUpdate: async (req: Request, res: Response) => {
         const driverId = req.clientId;
-        console.log("helloooo");
         
         try {
             if (driverId) {
@@ -100,4 +101,44 @@ export default {
             res.json((error as Error).message);
         }
     },
+
+    vehicleUpdate :async (req: Request, res: Response) => {
+        try {
+            console.log("inside vehicleeeee");
+            
+            const {registerationID,model} = req.body
+            const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+            const driverId = req.clientId;
+
+            console.log(registerationID,model,driverId);
+            
+            const rcImageUrl = await uploadToS3(files["rcImage"][0])
+            const carImageUrl = await uploadToS3(files["carImage"][0])
+                        
+            const response = await driver.findByIdAndUpdate(driverId,{
+                $set:{
+                    vehicle_details:{
+                        registerationID,
+                        model,
+                        rcImageUrl,
+                        carImageUrl
+                    }
+                }
+            },{
+                new:true
+            })
+
+            console.log(response,"vehickeeee");
+            
+
+            if(response?.email){
+                res.json({message:"Success"})
+            }else{
+                res.json({message:"Something Error"})
+            }
+
+        } catch (error) {
+            res.json((error as Error).message)
+        }
+    }
 };

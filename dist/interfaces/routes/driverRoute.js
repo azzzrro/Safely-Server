@@ -18,6 +18,10 @@ driverRouter.post('/identification', auth_1.default.verifyToken, multer_1.defaul
 ]), registrationController_1.default.identificationUpdate);
 driverRouter.post('/uploadDriverImage', auth_1.default.verifyToken, multer_1.default.single('driverImage'), registrationController_1.default.uploadDriverImage);
 driverRouter.post('/location', auth_1.default.verifyToken, registrationController_1.default.locationUpdate);
+driverRouter.post('/vehicleDetails', auth_1.default.verifyToken, multer_1.default.fields([
+    { name: 'carImage', maxCount: 1 },
+    { name: 'rcImage', maxCount: 1 },
+]), registrationController_1.default.vehicleUpdate);
 // login
 driverRouter.post('/checkLoginDriver', loginController_1.default.loginDriverCheck);
 driverRouter.post('/checkGoogleLoginDriver', loginController_1.default.GoogleLoginDriverCheck);

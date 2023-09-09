@@ -81,7 +81,8 @@ exports.default = {
                         longitude: longitude,
                         latitude: latitude,
                     },
-                    identification: true
+                    identification: true,
+                    account_status: "Pending"
                 },
             }, {
                 new: true,

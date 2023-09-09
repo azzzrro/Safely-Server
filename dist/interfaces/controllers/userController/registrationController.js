@@ -16,7 +16,6 @@ const registration_1 = __importDefault(require("../../../usecases/userUseCases/r
 exports.default = {
     signup: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { name, email, mobile, password, reffered_Code } = req.body;
-        console.log(req.body, "helooloo");
         const userData = {
             name,
             email,
@@ -26,7 +25,6 @@ exports.default = {
         };
         try {
             const response = yield registration_1.default.personal_details(userData);
-            console.log(response, "responseee");
             res.json(response);
         }
         catch (error) {
@@ -44,10 +42,8 @@ exports.default = {
         }
     }),
     identificationUpdate: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log(38);
         const { chooseID, enterID } = req.body;
         const userId = req.clientId;
-        console.log(chooseID, enterID, userId);
         try {
             if (userId && req.file) {
                 const userData = {
@@ -57,7 +53,6 @@ exports.default = {
                     file: req.file
                 };
                 const response = yield registration_1.default.identification_update(userData);
-                console.log(response, "responseyyy");
                 res.json(response);
             }
             else {

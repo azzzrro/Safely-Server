@@ -6,7 +6,6 @@ import registration from "../../../usecases/userUseCases/registration";
 export default {
     signup: async (req: Request, res: Response) => {
         const { name, email, mobile, password, reffered_Code } = req.body;
-        console.log(req.body, "helooloo");
         const userData = {
             name,
             email,
@@ -16,7 +15,6 @@ export default {
         };
         try {
             const response = await registration.personal_details(userData);
-            console.log(response, "responseee");
             res.json(response);
         } catch (error) {
             res.status(500).json({ error: (error as Error).message });
@@ -34,14 +32,11 @@ export default {
     },
 
     identificationUpdate: async (req: Request, res: Response) => {
-        console.log(38);
         
         const { chooseID, enterID } = req.body;
 
         const userId = req.clientId;
-        
-        console.log(chooseID,enterID,userId);
-        
+                
         try {
             
             if (userId && req.file) {
@@ -54,7 +49,6 @@ export default {
                 };
     
                 const response = await registration.identification_update(userData);
-                console.log(response,"responseyyy");
                 res.json(response);
             } else {
                 res.json({ message: "something error" });

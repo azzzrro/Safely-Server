@@ -61,7 +61,6 @@ const UserSchema: Schema = new Schema({
 
     account_status: {
         type: String,
-        default: "Pending",
     },
     identification: {
         type: Boolean,

@@ -12,6 +12,7 @@ export interface DriverInterface extends Document {
     license: License
     account_status: string;
     identification: boolean;
+    vehicle_deatils:Vehicle
 }
 
 interface Aadhar {
@@ -27,6 +28,13 @@ interface License {
 interface Location {
     longitude : number
     latitude : number
+}
+
+interface Vehicle {
+    registerationID:string
+    model:string
+    rcImageUrl:string
+    carImageUrl:string
 }
 
 const DriverSchema: Schema = new Schema({
@@ -80,9 +88,23 @@ const DriverSchema: Schema = new Schema({
         }
     },
 
+    vehicle_details:{
+        registerationID:{
+            type:String
+        },
+        model:{
+            type:String
+        },
+        rcImageUrl:{
+            type:String
+        },
+        carImageUrl:{
+            type:String
+        }
+    },
+
     account_status: {
         type: String,
-        default: "Pending",
     },
     identification: {
         type: Boolean,

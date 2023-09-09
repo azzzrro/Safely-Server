@@ -5,12 +5,14 @@ export default {
     loginCheckUser: async (mobile: number) => {
         const response = await userRepository.findUser(mobile);
         if (response?.mobile) {
-            if(response.account_status !== "Pending" && response.account_status === "Rejected"){
-                return { message: "Success" };
+            const token = await auth.createToken(response._id.toString());
+            if(response.account_status !== "Pending" && response.account_status !== "Rejected" && response.account_status !== "Blocked"){
+                return { message: "Success" ,token};
             }else if(response.account_status === "Rejected"){
-                return { message: "Rejected" };
+                return { message: "Rejected" ,token};
+            }else if(response.account_status === "Blocked"){
+                return { message: "Blocked" };
             }else if(!response.identification){
-                const token = await auth.createToken(response._id.toString());
                 return { message: "Incomplete registration",token};
             }
             else{
@@ -23,10 +25,12 @@ export default {
         const response = await userRepository.GoogleFindUser(email);
         if (response?.email) {
             const token = await auth.createToken(response._id.toString());
-            if(response.account_status !== "Pending" && response.account_status === "Rejected"){
+            if(response.account_status !== "Pending" && response.account_status !== "Rejected" && response.account_status !== "Blocked"){
                 return { message: "Success", token };
             }else if(response.account_status === "Rejected"){
-                return { message: "Rejected" };
+                return { message: "Rejected",token };
+            }else if(response.account_status === "Blocked"){
+                return { message: "Blocked" };
             }else if(!response.identification){
                 return { message: "Incomplete registration" ,token};
             }

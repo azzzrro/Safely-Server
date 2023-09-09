@@ -71,9 +71,22 @@ const DriverSchema = new mongoose_1.Schema({
             type: String
         }
     },
+    vehicle_details: {
+        registerationID: {
+            type: String
+        },
+        model: {
+            type: String
+        },
+        rcImageUrl: {
+            type: String
+        },
+        carImageUrl: {
+            type: String
+        }
+    },
     account_status: {
         type: String,
-        default: "Pending",
     },
     identification: {
         type: Boolean,
