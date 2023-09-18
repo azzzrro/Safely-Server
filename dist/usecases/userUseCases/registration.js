@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const userRepository_1 = __importDefault(require("../../repositories/userRepository"));
 const referralCode_1 = require("../../utilities/referralCode");
 const bcrypt_1 = __importDefault(require("../../services/bcrypt"));
-const auth_1 = __importDefault(require("../../middlewares/auth"));
 const awsS3_1 = __importDefault(require("../../services/awsS3"));
 exports.default = {
     checkUser: (mobile) => __awaiter(void 0, void 0, void 0, function* () {
@@ -26,9 +25,9 @@ exports.default = {
                     return { message: "User login" };
                 }
                 else {
-                    const token = yield auth_1.default.createToken(response._id.toString());
-                    console.log(response._id.toString());
-                    return { message: "User must fill documents", token };
+                    // const token = await auth.createToken(response._id.toString());
+                    // console.log(response._id.toString());
+                    return { message: "User must fill documents", userId: response._id };
                 }
             }
             return "User not registered";
@@ -51,8 +50,8 @@ exports.default = {
         };
         const response = yield userRepository_1.default.saveUser(newUserData);
         if (typeof response !== "string" && response._id) {
-            const token = yield auth_1.default.createToken(response._id.toString());
-            return ({ message: "Success", token });
+            // const token = await auth.createToken(response._id.toString())
+            return ({ message: "Success", userId: response._id });
         }
     }),
     identification_update: (userData) => __awaiter(void 0, void 0, void 0, function* () {

@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const registration_1 = __importDefault(require("../../../usecases/driverUseCases/registration"));
 const awsS3_1 = __importDefault(require("../../../services/awsS3"));
 const driver_1 = __importDefault(require("../../../entities/driver"));
+const mongodb_1 = require("mongodb");
 exports.default = {
     checkDriver: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { mobile } = req.body;
@@ -28,7 +29,6 @@ exports.default = {
     }),
     register: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { name, email, mobile, password, reffered_Code } = req.body;
-        console.log(req.body, "helooloo");
         const userData = {
             name,
             email,
@@ -46,14 +46,13 @@ exports.default = {
         }
     }),
     identificationUpdate: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log(38);
         const { aadharID, licenseID } = req.body;
+        const driverId = req.query.driverId;
         const files = req.files;
-        const driverId = req.clientId;
         try {
             if (driverId) {
                 const driverData = {
-                    driverId,
+                    driverId: new mongodb_1.ObjectId(driverId),
                     aadharID,
                     licenseID,
                     aadharFile: files["aadharImage"][0],
@@ -72,11 +71,11 @@ exports.default = {
         }
     }),
     uploadDriverImage: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const driverId = req.clientId;
+        const driverId = req.query.driverId;
         try {
             if (driverId && req.file) {
                 const driverData = {
-                    driverId,
+                    driverId: new mongodb_1.ObjectId(driverId),
                     file: req.file,
                 };
                 const response = yield registration_1.default.driverImage_update(driverData);
@@ -91,12 +90,12 @@ exports.default = {
         }
     }),
     locationUpdate: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const driverId = req.clientId;
+        const driverId = req.query.driverId;
         try {
             if (driverId) {
                 const { latitude, longitude } = req.body;
                 const data = {
-                    driverId,
+                    driverId: new mongodb_1.ObjectId(driverId),
                     latitude,
                     longitude,
                 };
@@ -113,7 +112,7 @@ exports.default = {
             console.log("inside vehicleeeee");
             const { registerationID, model } = req.body;
             const files = req.files;
-            const driverId = req.clientId;
+            const driverId = req.query.driverId;
             console.log(registerationID, model, driverId);
             const rcImageUrl = yield (0, awsS3_1.default)(files["rcImage"][0]);
             const carImageUrl = yield (0, awsS3_1.default)(files["carImage"][0]);

@@ -12,7 +12,7 @@ export interface DriverInterface extends Document {
     license: License
     account_status: string;
     identification: boolean;
-    vehicle_deatils:Vehicle
+    vehicle_details:Vehicle
 }
 
 interface Aadhar {

@@ -12,26 +12,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const login_1 = __importDefault(require("../../../usecases/userUseCases/login"));
+const ride_1 = __importDefault(require("../../../entities/ride"));
+const driver_1 = __importDefault(require("../../../entities/driver"));
 exports.default = {
-    loginUserCheck: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const { mobile } = req.body;
-        try {
-            const response = yield login_1.default.loginCheckUser(mobile);
-            res.json(response);
+    getCurrentRide: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const rideId = req.query.rideId;
+        const rideData = yield ride_1.default.findOne({ ride_id: rideId });
+        if (rideData) {
+            const driverData = yield driver_1.default.findOne({ _id: rideData.driver_id });
+            res.json({ rideData, driverData });
         }
-        catch (error) {
-            res.json(error.message);
-        }
-    }),
-    GoogleLoginUserCheck: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const { email } = req.body;
-        try {
-            const response = yield login_1.default.GoogleLoginCheckUser(email);
-            res.json(response);
-        }
-        catch (error) {
-            res.json(error.message);
+        else {
+            res.json({ message: "Something error" });
         }
     }),
 };

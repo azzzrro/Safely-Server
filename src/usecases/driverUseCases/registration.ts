@@ -1,5 +1,5 @@
 import driverRepository from "../../repositories/driverRepository";
-import auth from "../../middlewares/auth";
+// import auth from "../../middlewares/auth";
 import { refferalCode } from "../../utilities/referralCode";
 import bcrypt from "../../services/bcrypt";
 import { ObjectId } from "mongodb";
@@ -42,9 +42,9 @@ export default{
                 if (response.identification) {
                     return { message: "Driver login" };
                 } else {
-                    const token = await auth.createToken(response._id.toString());
-                    console.log(response._id.toString());
-                    return { message: "Driver must fill documents", token };
+                    // const token = await auth.createToken(response._id.toString());
+                    // console.log(response._id.toString());
+                    return { message: "Driver must fill documents", driverId:response._id };
                 }
             }
             return "Driver not registered";
@@ -69,8 +69,8 @@ export default{
 
         const response = await driverRepository.saveDriver(newDriverData);
         if(typeof response !== "string" && response.email){
-            const token = await auth.createToken(response._id.toString());
-            return {message: "Success",token};
+            // const token = await auth.createToken(response._id.toString());
+            return {message: "Success",driverId:response._id};
         }
     },
 
@@ -86,9 +86,7 @@ export default{
                 licenseID,
                 aadharImageUrl,
                 licenseImageUrl
-            };
-            console.log(newDriverData,"newuserdattaaa");
-            
+            };            
 
             const response = await driverRepository.updateIdentification(newDriverData);
             if(response?.email)

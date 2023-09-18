@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import registration from "../../../usecases/userUseCases/registration";
+import { ObjectId } from "mongodb";
 
 
 
@@ -35,14 +36,14 @@ export default {
         
         const { chooseID, enterID } = req.body;
 
-        const userId = req.clientId;
+        const userId: string = req.query.driverId as string
                 
         try {
             
             if (userId && req.file) {
     
                 const userData = {
-                    userId,
+                    userId : new ObjectId(userId),
                     chooseID,
                     enterID,
                     file : req.file
@@ -60,12 +61,12 @@ export default {
     },
 
     uploadUserImage : async(req:Request,res:Response)=>{
-        const userId = req.clientId
+        const userId: string = req.query.driverId as string
         
         try {
             if(userId && req.file){
                 const userData = {
-                    userId,
+                    userId : new ObjectId(userId),
                     file:req.file
                 }
                 

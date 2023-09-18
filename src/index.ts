@@ -2,22 +2,24 @@ import express,{Request,Response}  from 'express';
 import cors from 'cors'
 import session from 'express-session';
 import {v4 as uuidv4} from 'uuid'
+import http from 'http';
 
 import connectDB from './config/mongo';
 import userRoute from './interfaces/routes/userRoute';
 import driverRouter from './interfaces/routes/driverRoute';
 import adminRoute from './interfaces/routes/adminRoute';
 
+import { setUpSocketIO } from './services/socket-io';
+
+
 const app = express();
+const server = http.createServer(app);
 
 app.use(cors())
 
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-
-// app.use(express.json());
-// app.use(express.urlencoded({extended:false}))
 
 const allowedOrigins = ['http://localhost:5173'];
 app.use(
@@ -55,11 +57,12 @@ app.use('/admin' , adminRoute)
 const port = 3000;
 
 connectDB()
+setUpSocketIO(server);
 
 app.get('/',(req:Request,res:Response)=>{
   res.send().status(200)
 })
 
-app.listen(port, () => {
+server.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);
 });

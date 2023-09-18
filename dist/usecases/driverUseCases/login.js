@@ -18,18 +18,20 @@ exports.default = {
     loginCheckDriver: (mobile) => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield driverRepository_1.default.findDriver(mobile);
         if (response === null || response === void 0 ? void 0 : response.mobile) {
-            const token = yield auth_1.default.createToken(response._id.toString());
-            if (response.account_status !== "Pending" && response.account_status !== "Rejected" && response.account_status !== "Blocked") {
-                return { message: "Success", token };
+            if (response.account_status !== "Pending" &&
+                response.account_status !== "Rejected" &&
+                response.account_status !== "Blocked") {
+                const token = yield auth_1.default.createToken(response._id.toString());
+                return { message: "Success", name: response.name, token, _id: response._id };
             }
             else if (response.account_status === "Rejected") {
-                return { message: "Rejected", token };
+                return { message: "Rejected", driverId: response._id };
             }
             else if (response.account_status === "Blocked") {
                 return { message: "Blocked" };
             }
             else if (!response.identification) {
-                return { message: "Incomplete registration", token };
+                return { message: "Incomplete registration", driverId: response._id };
             }
             else {
                 return { message: "Not verified" };
@@ -41,18 +43,20 @@ exports.default = {
     GoogleLoginCheckDriver: (email) => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield driverRepository_1.default.GoogleFindDriver(email);
         if (response === null || response === void 0 ? void 0 : response.email) {
-            const token = yield auth_1.default.createToken(response._id.toString());
-            if (response.account_status !== "Pending" && response.account_status !== "Rejected" && response.account_status !== "Blocked") {
-                return { message: "Success", token };
+            if (response.account_status !== "Pending" &&
+                response.account_status !== "Rejected" &&
+                response.account_status !== "Blocked") {
+                const token = yield auth_1.default.createToken(response._id.toString());
+                return { message: "Success", name: response.name, token, _id: response._id };
             }
             else if (response.account_status === "Rejected") {
-                return { message: "Rejected", token };
+                return { message: "Rejected", driverId: response._id };
             }
             else if (response.account_status === "Blocked") {
                 return { message: "Blocked" };
             }
             else if (!response.identification) {
-                return { message: "Incomplete registration", token };
+                return { message: "Incomplete registration", driverId: response._id };
             }
             else {
                 return { message: "Not verified" };

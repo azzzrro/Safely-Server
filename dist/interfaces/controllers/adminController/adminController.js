@@ -19,7 +19,7 @@ exports.default = {
     adminLogin: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { email, password } = req.body;
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASS) {
-            res.json({ message: "Success" });
+            res.json({ message: "Success", email: process.env.ADMIN_EMAIL });
         }
         else {
             res.json({ message: "Invalid Credentials" });

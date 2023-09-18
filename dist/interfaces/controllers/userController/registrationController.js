@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const registration_1 = __importDefault(require("../../../usecases/userUseCases/registration"));
+const mongodb_1 = require("mongodb");
 exports.default = {
     signup: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { name, email, mobile, password, reffered_Code } = req.body;
@@ -43,11 +44,11 @@ exports.default = {
     }),
     identificationUpdate: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { chooseID, enterID } = req.body;
-        const userId = req.clientId;
+        const userId = req.query.driverId;
         try {
             if (userId && req.file) {
                 const userData = {
-                    userId,
+                    userId: new mongodb_1.ObjectId(userId),
                     chooseID,
                     enterID,
                     file: req.file
@@ -64,11 +65,11 @@ exports.default = {
         }
     }),
     uploadUserImage: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const userId = req.clientId;
+        const userId = req.query.driverId;
         try {
             if (userId && req.file) {
                 const userData = {
-                    userId,
+                    userId: new mongodb_1.ObjectId(userId),
                     file: req.file
                 };
                 const response = yield registration_1.default.userimage_update(userData);

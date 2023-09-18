@@ -1,7 +1,6 @@
 import userRepository from "../../repositories/userRepository";
 import { refferalCode } from "../../utilities/referralCode";
 import bcryptUtils from "../../services/bcrypt";
-import auth from "../../middlewares/auth";
 import { ObjectId } from "mongodb";
 import uploadToS3 from '../../services/awsS3'
 
@@ -35,9 +34,9 @@ export default {
                 if (response.identification) {
                     return { message: "User login" };
                 } else {
-                    const token = await auth.createToken(response._id.toString());
-                    console.log(response._id.toString());
-                    return { message: "User must fill documents", token };
+                    // const token = await auth.createToken(response._id.toString());
+                    // console.log(response._id.toString());
+                    return { message: "User must fill documents", userId:response._id };
                 }
             }
             return "User not registered";
@@ -61,8 +60,8 @@ export default {
         };
         const response = await userRepository.saveUser(newUserData);
         if(typeof response !== "string" && response._id){
-            const token = await auth.createToken(response._id.toString())
-            return ({message:"Success",token});
+            // const token = await auth.createToken(response._id.toString())
+            return ({message:"Success",userId:response._id});
         }
 
     },

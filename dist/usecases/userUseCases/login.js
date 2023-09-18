@@ -18,18 +18,20 @@ exports.default = {
     loginCheckUser: (mobile) => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield userRepository_1.default.findUser(mobile);
         if (response === null || response === void 0 ? void 0 : response.mobile) {
-            const token = yield auth_1.default.createToken(response._id.toString());
-            if (response.account_status !== "Pending" && response.account_status !== "Rejected" && response.account_status !== "Blocked") {
-                return { message: "Success", token };
+            if (response.account_status !== "Pending" &&
+                response.account_status !== "Rejected" &&
+                response.account_status !== "Blocked") {
+                const token = yield auth_1.default.createToken(response._id.toString());
+                return { message: "Success", name: response.name, token, _id: response._id };
             }
             else if (response.account_status === "Rejected") {
-                return { message: "Rejected", token };
+                return { message: "Rejected", userId: response._id };
             }
             else if (response.account_status === "Blocked") {
                 return { message: "Blocked" };
             }
             else if (!response.identification) {
-                return { message: "Incomplete registration", token };
+                return { message: "Incomplete registration", userId: response._id };
             }
             else {
                 return { message: "Not verified" };
@@ -41,18 +43,20 @@ exports.default = {
     GoogleLoginCheckUser: (email) => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield userRepository_1.default.GoogleFindUser(email);
         if (response === null || response === void 0 ? void 0 : response.email) {
-            const token = yield auth_1.default.createToken(response._id.toString());
-            if (response.account_status !== "Pending" && response.account_status !== "Rejected" && response.account_status !== "Blocked") {
-                return { message: "Success", token };
+            if (response.account_status !== "Pending" &&
+                response.account_status !== "Rejected" &&
+                response.account_status !== "Blocked") {
+                const token = yield auth_1.default.createToken(response._id.toString());
+                return { message: "Success", name: response.name, token, _id: response._id };
             }
             else if (response.account_status === "Rejected") {
-                return { message: "Rejected", token };
+                return { message: "Rejected", userId: response._id };
             }
             else if (response.account_status === "Blocked") {
                 return { message: "Blocked" };
             }
             else if (!response.identification) {
-                return { message: "Incomplete registration", token };
+                return { message: "Incomplete registration", userId: response._id };
             }
             else {
                 return { message: "Not verified" };

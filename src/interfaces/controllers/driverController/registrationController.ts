@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import registration from "../../../usecases/driverUseCases/registration";
 import uploadToS3 from "../../../services/awsS3";
 import driver from "../../../entities/driver";
+import { ObjectId } from "mongodb";
 
 export default {
     checkDriver: async (req: Request, res: Response) => {
@@ -16,7 +17,6 @@ export default {
 
     register: async (req: Request, res: Response) => {
         const { name, email, mobile, password, reffered_Code } = req.body;
-        console.log(req.body, "helooloo");
         const userData = {
             name,
             email,
@@ -34,17 +34,14 @@ export default {
     },
 
     identificationUpdate: async (req: Request, res: Response) => {
-        console.log(38);
-
         const { aadharID, licenseID } = req.body;
+        const driverId: string = req.query.driverId as string
         const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-
-        const driverId = req.clientId;
 
         try {
             if (driverId) {
                 const driverData = {
-                    driverId,
+                    driverId : new ObjectId(driverId),
                     aadharID,
                     licenseID,
                     aadharFile: files["aadharImage"][0],
@@ -63,12 +60,12 @@ export default {
     },
 
     uploadDriverImage: async (req: Request, res: Response) => {
-        const driverId = req.clientId;
+        const driverId: string = req.query.driverId as string
 
         try {
             if (driverId && req.file) {
                 const driverData = {
-                    driverId,
+                    driverId : new ObjectId(driverId),
                     file: req.file,
                 };
 
@@ -83,14 +80,14 @@ export default {
     },
 
     locationUpdate: async (req: Request, res: Response) => {
-        const driverId = req.clientId;
+        const driverId: string = req.query.driverId as string
         
         try {
             if (driverId) {
                 const { latitude, longitude } = req.body;
 
                 const data = {
-                    driverId,
+                    driverId : new ObjectId(driverId),
                     latitude,
                     longitude,
                 };
@@ -108,7 +105,7 @@ export default {
             
             const {registerationID,model} = req.body
             const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-            const driverId = req.clientId;
+            const driverId: ObjectId = req.query.driverId as unknown as ObjectId
 
             console.log(registerationID,model,driverId);
             

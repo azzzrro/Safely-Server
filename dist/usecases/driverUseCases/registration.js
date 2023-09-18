@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const driverRepository_1 = __importDefault(require("../../repositories/driverRepository"));
-const auth_1 = __importDefault(require("../../middlewares/auth"));
+// import auth from "../../middlewares/auth";
 const referralCode_1 = require("../../utilities/referralCode");
 const bcrypt_1 = __importDefault(require("../../services/bcrypt"));
 const awsS3_1 = __importDefault(require("../../services/awsS3"));
@@ -26,9 +26,9 @@ exports.default = {
                     return { message: "Driver login" };
                 }
                 else {
-                    const token = yield auth_1.default.createToken(response._id.toString());
-                    console.log(response._id.toString());
-                    return { message: "Driver must fill documents", token };
+                    // const token = await auth.createToken(response._id.toString());
+                    // console.log(response._id.toString());
+                    return { message: "Driver must fill documents", driverId: response._id };
                 }
             }
             return "Driver not registered";
@@ -51,8 +51,8 @@ exports.default = {
         };
         const response = yield driverRepository_1.default.saveDriver(newDriverData);
         if (typeof response !== "string" && response.email) {
-            const token = yield auth_1.default.createToken(response._id.toString());
-            return { message: "Success", token };
+            // const token = await auth.createToken(response._id.toString());
+            return { message: "Success", driverId: response._id };
         }
     }),
     identification_update: (driverData) => __awaiter(void 0, void 0, void 0, function* () {
@@ -67,7 +67,6 @@ exports.default = {
                 aadharImageUrl,
                 licenseImageUrl
             };
-            console.log(newDriverData, "newuserdattaaa");
             const response = yield driverRepository_1.default.updateIdentification(newDriverData);
             if (response === null || response === void 0 ? void 0 : response.email)
                 return ({ message: "Success" });
