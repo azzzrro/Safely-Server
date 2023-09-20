@@ -2,7 +2,7 @@ import { Router } from "express";
 import registrationController from "../controllers/driverController/registrationController";
 import upload from "../../middlewares/multer";
 import loginController from "../controllers/driverController/loginController";
-import driverRideController from "../controllers/driverController/driverRideController";
+import driverCoreController from "../controllers/driverController/driverCoreController";
 
 
 const driverRouter = Router()
@@ -30,5 +30,8 @@ driverRouter.post('/checkGoogleLoginDriver',loginController.GoogleLoginDriverChe
 
 
 //ride
-driverRouter.get('/getCurrentRide',driverRideController.getCurrentRide)
+driverRouter.get('/getCurrentRide',driverCoreController.getCurrentRide)
+driverRouter.get('/driverData',driverCoreController.getDriverData)
+
+
 export default driverRouter

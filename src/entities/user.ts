@@ -13,17 +13,20 @@ export interface UserInterface extends Document {
     account_status: string;
     verified: boolean;
     identification: boolean;
+    wallet: {
+        balance: number;
+        transactions: {
+            date: Date;
+            details: string;
+            amount: number;
+            status: string;
+        }[];
+    };
+    RideDetails:{
+        completedRides:number
+        cancelledRides:number
+    }
 }
-
-// interface Image {
-//     public_id: string;
-//     url: string;
-// }
-
-// interface IdImage {
-//     public_id: string;
-//     url: string;
-// }
 
 const UserSchema: Schema = new Schema({
     name: {
@@ -42,8 +45,8 @@ const UserSchema: Schema = new Schema({
         type: String,
         required: true,
     },
-    userImage:{
-        type:String
+    userImage: {
+        type: String,
     },
     referral_code: {
         type: String,
@@ -65,6 +68,40 @@ const UserSchema: Schema = new Schema({
     identification: {
         type: Boolean,
         default: false,
+    },
+
+    wallet: {
+        balance: {
+            type: Number,
+            default: 0,
+        },
+        transactions: [
+            {
+                date: {
+                    type: Date,
+                },
+                details: {
+                    type: String,
+                },
+                amount: {
+                    type: Number,
+                },
+                status: {
+                    type: String,
+                },
+            },
+        ],
+    },
+
+    RideDetails: {
+        completedRides: {
+            default: 0,
+            type: Number,
+        },
+        cancelledRides: {
+            default: 0,
+            type: Number,
+        },
     },
 });
 

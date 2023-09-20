@@ -64,7 +64,7 @@ export const setUpSocketIO = (server: HttpServer): void => {
             try {
                 driverLatitude = latitude;
                 driverLongitude = longitude;
-                
+
                 const distance = calculateDistance(
                     driverLatitude,
                     driverLongitude,
@@ -74,7 +74,7 @@ export const setUpSocketIO = (server: HttpServer): void => {
 
                 if (distance <= 5) {
                     const driverIds = await driver
-                        .find({ "vehicle_details.model": rideDetails.model })
+                        .find({ "vehicle_details.model": rideDetails.model , account_status:{$in:["Good","Warning"]},rideStatus:false})
                         .select("_id")
                         .exec();
 
@@ -90,7 +90,7 @@ export const setUpSocketIO = (server: HttpServer): void => {
         });
 
         socket.on("acceptRide", async (acceptedRideData: RideDetails) => {
-            const currentDateTime = moment().format("YYYY-MM-DD hh:mm:ss A") as unknown as number;
+            const currentDateTime = moment().format("YYYY-MM-DD hh:mm:ss A") as unknown as Date;
 
             acceptedRideData.status = "Pending";
             acceptedRideData.date = currentDateTime;
@@ -103,6 +103,9 @@ export const setUpSocketIO = (server: HttpServer): void => {
 
             const newRide = new Ride(acceptedRideData);
             const response = await newRide.save();
+            await driver.findByIdAndUpdate(acceptedRideData.driver_id,{
+                rideStatus:true
+            })
 
             console.log(response, "response after saving");
 
@@ -130,6 +133,15 @@ export const setUpSocketIO = (server: HttpServer): void => {
                 io.emit("error in confirming ride")
             }
         });
+
+        socket.on("driverRideFinish",()=>{
+            console.log("server response getting")
+            io.emit("userPaymentPage")
+        })
+
+        socket.on("paymentCompleted",()=>{
+            io.emit("driverPaymentSuccess")
+        })
 
         socket.on("disconnect", () => {
             console.log("Client-side disconnected:", socket.id);

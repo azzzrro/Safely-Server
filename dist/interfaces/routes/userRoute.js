@@ -7,7 +7,7 @@ const express_1 = require("express");
 const registrationController_1 = __importDefault(require("../controllers/userController/registrationController"));
 const loginController_1 = __importDefault(require("../controllers/userController/loginController"));
 const multer_1 = __importDefault(require("../../middlewares/multer"));
-const userRideController_1 = __importDefault(require("../controllers/userController/userRideController"));
+const userCoreController_1 = __importDefault(require("../controllers/userController/userCoreController"));
 const userRoute = (0, express_1.Router)();
 // registration
 userRoute.post('/register', registrationController_1.default.signup);
@@ -18,5 +18,7 @@ userRoute.post('/uploadUserImage', multer_1.default.single('userImage'), registr
 userRoute.post('/checkLoginUser', loginController_1.default.loginUserCheck);
 userRoute.post('/checkGoogleLoginUser', loginController_1.default.GoogleLoginUserCheck);
 //rides
-userRoute.get('/getCurrentRide', userRideController_1.default.getCurrentRide);
+userRoute.get('/getCurrentRide', userCoreController_1.default.getCurrentRide);
+userRoute.post('/payment', userCoreController_1.default.payment);
+userRoute.get('/userData', userCoreController_1.default.getUserData);
 exports.default = userRoute;

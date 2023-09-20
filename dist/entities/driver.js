@@ -42,48 +42,48 @@ const DriverSchema = new mongoose_1.Schema({
         required: true,
     },
     driverImage: {
-        type: String
+        type: String,
     },
     referral_code: {
         type: String,
     },
     aadhar: {
         aadharId: {
-            type: String
+            type: String,
         },
         aadharImage: {
-            type: String
-        }
+            type: String,
+        },
     },
     license: {
         licenseId: {
-            type: String
+            type: String,
         },
         licenseImage: {
-            type: String
-        }
+            type: String,
+        },
     },
     location: {
         longitude: {
-            type: String
+            type: String,
         },
         latitude: {
-            type: String
-        }
+            type: String,
+        },
     },
     vehicle_details: {
         registerationID: {
-            type: String
+            type: String,
         },
         model: {
-            type: String
+            type: String,
         },
         rcImageUrl: {
-            type: String
+            type: String,
         },
         carImageUrl: {
-            type: String
-        }
+            type: String,
+        },
     },
     account_status: {
         type: String,
@@ -92,5 +92,45 @@ const DriverSchema = new mongoose_1.Schema({
         type: Boolean,
         default: false,
     },
+    wallet: {
+        balance: {
+            type: Number,
+            default: 0,
+        },
+        totalEarnings: {
+            type: Number,
+            default: 0
+        },
+        transactions: [
+            {
+                date: {
+                    type: Date,
+                },
+                details: {
+                    type: String,
+                },
+                amount: {
+                    type: Number,
+                },
+                status: {
+                    type: String,
+                },
+            },
+        ],
+    },
+    RideDetails: {
+        completedRides: {
+            default: 0,
+            type: Number,
+        },
+        cancelledRides: {
+            default: 0,
+            type: Number,
+        },
+    },
+    rideStatus: {
+        type: Boolean,
+        default: false
+    }
 });
 exports.default = mongoose_1.default.model("Driver", DriverSchema);

@@ -65,7 +65,7 @@ const setUpSocketIO = (server) => {
                 const distance = (0, exports.calculateDistance)(driverLatitude, driverLongitude, rideDetails.pickupCoordinates.latitude, rideDetails.pickupCoordinates.longitude);
                 if (distance <= 5) {
                     const driverIds = yield driver_1.default
-                        .find({ "vehicle_details.model": rideDetails.model })
+                        .find({ "vehicle_details.model": rideDetails.model, account_status: { $in: ["Good", "Warning"] }, rideStatus: false })
                         .select("_id")
                         .exec();
                     const idsArray = driverIds.map((driver) => driver._id);
@@ -90,6 +90,9 @@ const setUpSocketIO = (server) => {
             acceptedRideData.driverCoordinates.longitude = driverLongitude;
             const newRide = new ride_1.default(acceptedRideData);
             const response = yield newRide.save();
+            yield driver_1.default.findByIdAndUpdate(acceptedRideData.driver_id, {
+                rideStatus: true
+            });
             console.log(response, "response after saving");
             io.emit("driverConfirmation", response.ride_id);
             io.emit("userConfirmation", response.ride_id);
@@ -111,6 +114,13 @@ const setUpSocketIO = (server) => {
                 io.emit("error in confirming ride");
             }
         }));
+        socket.on("driverRideFinish", () => {
+            console.log("server response getting");
+            io.emit("userPaymentPage");
+        });
+        socket.on("paymentCompleted", () => {
+            io.emit("driverPaymentSuccess");
+        });
         socket.on("disconnect", () => {
             console.log("Client-side disconnected:", socket.id);
         });

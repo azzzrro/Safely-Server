@@ -44,7 +44,7 @@ exports.default = {
     }),
     identificationUpdate: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { chooseID, enterID } = req.body;
-        const userId = req.query.driverId;
+        const userId = req.query.userId;
         try {
             if (userId && req.file) {
                 const userData = {
@@ -65,7 +65,7 @@ exports.default = {
         }
     }),
     uploadUserImage: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const userId = req.query.driverId;
+        const userId = req.query.userId;
         try {
             if (userId && req.file) {
                 const userData = {

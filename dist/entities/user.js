@@ -24,14 +24,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-// interface Image {
-//     public_id: string;
-//     url: string;
-// }
-// interface IdImage {
-//     public_id: string;
-//     url: string;
-// }
 const UserSchema = new mongoose_1.Schema({
     name: {
         type: String,
@@ -50,7 +42,7 @@ const UserSchema = new mongoose_1.Schema({
         required: true,
     },
     userImage: {
-        type: String
+        type: String,
     },
     referral_code: {
         type: String,
@@ -70,6 +62,38 @@ const UserSchema = new mongoose_1.Schema({
     identification: {
         type: Boolean,
         default: false,
+    },
+    wallet: {
+        balance: {
+            type: Number,
+            default: 0,
+        },
+        transactions: [
+            {
+                date: {
+                    type: Date,
+                },
+                details: {
+                    type: String,
+                },
+                amount: {
+                    type: Number,
+                },
+                status: {
+                    type: String,
+                },
+            },
+        ],
+    },
+    RideDetails: {
+        completedRides: {
+            default: 0,
+            type: Number,
+        },
+        cancelledRides: {
+            default: 0,
+            type: Number,
+        },
     },
 });
 exports.default = mongoose_1.default.model("User", UserSchema);

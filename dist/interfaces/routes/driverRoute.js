@@ -7,7 +7,7 @@ const express_1 = require("express");
 const registrationController_1 = __importDefault(require("../controllers/driverController/registrationController"));
 const multer_1 = __importDefault(require("../../middlewares/multer"));
 const loginController_1 = __importDefault(require("../controllers/driverController/loginController"));
-const driverRideController_1 = __importDefault(require("../controllers/driverController/driverRideController"));
+const driverCoreController_1 = __importDefault(require("../controllers/driverController/driverCoreController"));
 const driverRouter = (0, express_1.Router)();
 // registration
 driverRouter.post('/checkDriver', registrationController_1.default.checkDriver);
@@ -26,5 +26,6 @@ driverRouter.post('/vehicleDetails', multer_1.default.fields([
 driverRouter.post('/checkLoginDriver', loginController_1.default.loginDriverCheck);
 driverRouter.post('/checkGoogleLoginDriver', loginController_1.default.GoogleLoginDriverCheck);
 //ride
-driverRouter.get('/getCurrentRide', driverRideController_1.default.getCurrentRide);
+driverRouter.get('/getCurrentRide', driverCoreController_1.default.getCurrentRide);
+driverRouter.get('/driverData', driverCoreController_1.default.getDriverData);
 exports.default = driverRouter;

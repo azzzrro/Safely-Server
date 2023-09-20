@@ -13,4 +13,10 @@ export default {
             res.json({ message: "Something error" });
         }
     },
+
+    getDriverData: async (req: Request, res: Response) => {
+        const id = req.query.id;
+        const response = await driver.findById(id);
+        res.json(response);
+    },
 };

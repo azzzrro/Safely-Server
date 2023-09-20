@@ -2,7 +2,7 @@ import { Router } from "express";
 import registrationController from "../controllers/userController/registrationController";
 import loginController from "../controllers/userController/loginController";
 import upload from "../../middlewares/multer";
-import userRideController from "../controllers/userController/userRideController";
+import userCoreController from "../controllers/userController/userCoreController";
 
 const userRoute = Router()
 
@@ -17,5 +17,10 @@ userRoute.post('/checkLoginUser',loginController.loginUserCheck)
 userRoute.post('/checkGoogleLoginUser',loginController.GoogleLoginUserCheck)
 
 //rides
-userRoute.get('/getCurrentRide',userRideController.getCurrentRide)
+userRoute.get('/getCurrentRide',userCoreController.getCurrentRide)
+userRoute.post('/payment',userCoreController.payment)
+userRoute.get('/userData',userCoreController.getUserData)
+
+
+
 export default userRoute

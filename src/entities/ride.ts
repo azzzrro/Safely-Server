@@ -16,7 +16,7 @@ export interface RideDetails extends Document {
     duration: string;
     model: string;
     price: number;
-    date: number;
+    date: Date;
     status: string;
     pin: number;
 }

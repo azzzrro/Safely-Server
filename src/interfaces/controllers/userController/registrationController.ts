@@ -36,7 +36,7 @@ export default {
         
         const { chooseID, enterID } = req.body;
 
-        const userId: string = req.query.driverId as string
+        const userId: string = req.query.userId as string
                 
         try {
             
@@ -61,7 +61,7 @@ export default {
     },
 
     uploadUserImage : async(req:Request,res:Response)=>{
-        const userId: string = req.query.driverId as string
+        const userId: string = req.query.userId as string
         
         try {
             if(userId && req.file){
