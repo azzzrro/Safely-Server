@@ -24,10 +24,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-// interface DriverCoordinates {
-//     latitude: number;
-//     longitude: number;
-// }
 const RideSchema = new mongoose_1.Schema({
     ride_id: {
         type: String,
@@ -80,6 +76,9 @@ const RideSchema = new mongoose_1.Schema({
     price: {
         type: Number,
     },
+    paymentMode: {
+        type: String,
+    },
     date: {
         type: Date,
     },
@@ -89,5 +88,11 @@ const RideSchema = new mongoose_1.Schema({
     pin: {
         type: Number,
     },
+    feedback: {
+        type: String
+    },
+    rating: {
+        type: Number
+    }
 });
 exports.default = mongoose_1.default.model("Ride", RideSchema);

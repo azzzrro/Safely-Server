@@ -28,4 +28,6 @@ driverRouter.post('/checkGoogleLoginDriver', loginController_1.default.GoogleLog
 //ride
 driverRouter.get('/getCurrentRide', driverCoreController_1.default.getCurrentRide);
 driverRouter.get('/driverData', driverCoreController_1.default.getDriverData);
+driverRouter.get('/getAllrides', driverCoreController_1.default.getAllrides);
+driverRouter.get('/getRideDetails', driverCoreController_1.default.getRideDetails);
 exports.default = driverRouter;

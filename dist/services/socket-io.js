@@ -17,6 +17,8 @@ const socket_io_1 = require("socket.io");
 const ride_1 = __importDefault(require("../entities/ride"));
 const driver_1 = __importDefault(require("../entities/driver"));
 const moment_1 = __importDefault(require("moment"));
+const ride_2 = __importDefault(require("../entities/ride"));
+const user_1 = __importDefault(require("../entities/user"));
 const generatePIN = () => {
     let pin = "";
     for (let i = 0; i < 6; i++) {
@@ -65,7 +67,7 @@ const setUpSocketIO = (server) => {
                 const distance = (0, exports.calculateDistance)(driverLatitude, driverLongitude, rideDetails.pickupCoordinates.latitude, rideDetails.pickupCoordinates.longitude);
                 if (distance <= 5) {
                     const driverIds = yield driver_1.default
-                        .find({ "vehicle_details.model": rideDetails.model, account_status: { $in: ["Good", "Warning"] }, rideStatus: false })
+                        .find({ "vehicle_details.model": rideDetails.model, account_status: { $in: ["Good", "Warning"] }, isAvailable: true })
                         .select("_id")
                         .exec();
                     const idsArray = driverIds.map((driver) => driver._id);
@@ -81,7 +83,7 @@ const setUpSocketIO = (server) => {
             }
         }));
         socket.on("acceptRide", (acceptedRideData) => __awaiter(void 0, void 0, void 0, function* () {
-            const currentDateTime = (0, moment_1.default)().format("YYYY-MM-DD hh:mm:ss A");
+            const currentDateTime = (0, moment_1.default)().format("YYYY-MM-DD");
             acceptedRideData.status = "Pending";
             acceptedRideData.date = currentDateTime;
             acceptedRideData.pin = (0, exports.generatePIN)();
@@ -91,7 +93,7 @@ const setUpSocketIO = (server) => {
             const newRide = new ride_1.default(acceptedRideData);
             const response = yield newRide.save();
             yield driver_1.default.findByIdAndUpdate(acceptedRideData.driver_id, {
-                rideStatus: true
+                isAvailable: false
             });
             console.log(response, "response after saving");
             io.emit("driverConfirmation", response.ride_id);
@@ -121,6 +123,30 @@ const setUpSocketIO = (server) => {
         socket.on("paymentCompleted", () => {
             io.emit("driverPaymentSuccess");
         });
+        socket.on("rideCancelled", (ride_id) => __awaiter(void 0, void 0, void 0, function* () {
+            try {
+                const rideData = yield ride_2.default.findOne({ ride_id: ride_id });
+                yield ride_2.default.findOneAndUpdate({ ride_id: ride_id }, {
+                    $set: {
+                        status: "Cancelled"
+                    }
+                });
+                yield driver_1.default.findByIdAndUpdate(rideData === null || rideData === void 0 ? void 0 : rideData.driver_id, {
+                    $set: {
+                        isAvailable: true
+                    }
+                });
+                yield user_1.default.findByIdAndUpdate(rideData === null || rideData === void 0 ? void 0 : rideData.user_id, {
+                    $inc: {
+                        "RideDetails.cancelledRides": 1,
+                    },
+                });
+                io.emit("rideCancelled");
+            }
+            catch (error) {
+                console.log(error.message);
+            }
+        }));
         socket.on("disconnect", () => {
             console.log("Client-side disconnected:", socket.id);
         });

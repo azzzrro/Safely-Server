@@ -11,14 +11,15 @@ export interface RideDetails extends Document {
     driverCoordinates?: {
         latitude?: number;
         longitude?: number;
-      };
+    };
     distance: string;
     duration: string;
     model: string;
     price: number;
-    date: Date;
+    date: string;
     status: string;
     pin: number;
+    paymentMode:string
 }
 
 interface PickupCoordinates {
@@ -30,11 +31,6 @@ interface DropoffCoordinates {
     latitude: number;
     longitude: number;
 }
-
-// interface DriverCoordinates {
-//     latitude: number;
-//     longitude: number;
-// }
 
 const RideSchema: Schema = new Schema({
     ride_id: {
@@ -88,6 +84,9 @@ const RideSchema: Schema = new Schema({
     price: {
         type: Number,
     },
+    paymentMode: {
+        type: String,
+    },
     date: {
         type: Date,
     },
@@ -97,6 +96,13 @@ const RideSchema: Schema = new Schema({
     pin: {
         type: Number,
     },
+    feedback:{
+        type:String
+    },
+    rating:{
+        type:Number
+    }
+
 });
 
 export default mongoose.model<RideDetails>("Ride", RideSchema);

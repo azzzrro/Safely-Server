@@ -27,7 +27,7 @@ export interface DriverInterface extends Document {
         cancelledRides:number
         totalEarnings:number
     }
-    rideStatus:boolean
+    isAvailable:boolean
 }
 
 interface Aadhar {
@@ -131,10 +131,6 @@ const DriverSchema: Schema = new Schema({
             type: Number,
             default: 0,
         },
-        totalEarnings: {
-            type: Number,
-            default:0
-        },
         transactions: [
             {
                 date: {
@@ -161,10 +157,18 @@ const DriverSchema: Schema = new Schema({
             default:0,
             type: Number,
         },
+        totalEarnings: {
+            type: Number,
+            default:0
+        }
     },
-    rideStatus:{
+    isAvailable:{
         type:Boolean,
-        default:false
+        default:true
+    },
+    ratings:{
+        type:Number,
+        default:0
     }
 });
 

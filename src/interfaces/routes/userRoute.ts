@@ -17,10 +17,13 @@ userRoute.post('/checkLoginUser',loginController.loginUserCheck)
 userRoute.post('/checkGoogleLoginUser',loginController.GoogleLoginUserCheck)
 
 //rides
+userRoute.get('/userData',userCoreController.getUserData)
 userRoute.get('/getCurrentRide',userCoreController.getCurrentRide)
 userRoute.post('/payment',userCoreController.payment)
-userRoute.get('/userData',userCoreController.getUserData)
+userRoute.post('/payment-stripe',userCoreController.paymentStripe)
 
-
+userRoute.get('/getAllrides',userCoreController.getAllrides)
+userRoute.get('/getRideDetails',userCoreController.getRideDetails)
+userRoute.post('/feedback',userCoreController.feedback)
 
 export default userRoute

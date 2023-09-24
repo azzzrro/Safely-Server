@@ -3,6 +3,7 @@ import ride, { RideDetails } from "../../../entities/ride";
 import driver from "../../../entities/driver";
 import user from "../../../entities/user";
 import { ObjectId } from "mongodb";
+import Stripe from "stripe";
 
 export default {
     getCurrentRide: async (req: Request, res: Response) => {
@@ -18,44 +19,45 @@ export default {
 
     payment: async (req: Request, res: Response) => {
         const { amount, paymentMode } = req.body;
-        console.log(amount, paymentMode, 1);
 
         const rideId = req.query.rideId;
 
-        console.log(rideId, 2);
-
         const rideData = await ride.findOne({ ride_id: rideId });
-
-        console.log(rideData, 3);
 
         const userId = new ObjectId(rideData?.user_id);
         const driverId = new ObjectId(rideData?.driver_id);
 
-        console.log(userId, driverId, 3);
-
         const userData = await user.findById(userId);
         const driverData = await driver.findById(driverId);
 
-        console.log(userData, driverData, 4);
-
         if (userData && driverData) {
+            console.log("undalloooo");
+            console.log("heeeeee");
+
+            
             if (paymentMode === "COD") {
                 try {
-                    await driver.findByIdAndUpdate(
-                        driverId,
-                        {
-                            $inc: {
-                                "RideDetails.completedRides": 1,
-                                "RideDetails.totalEarnings": amount,
-                            },
-                            rideStatus:false
-                        }
-                    );
+                    await driver.findByIdAndUpdate(driverId, {
+                        $inc: {
+                            "RideDetails.completedRides": 1,
+                            "RideDetails.totalEarnings": amount,
+                        },
+                        isAvailable: true,
+                    });
                     await user.findByIdAndUpdate(userId, {
                         $inc: {
                             "RideDetails.completedRides": 1,
                         },
                     });
+
+                    await ride.findOneAndUpdate(
+                        { ride_id: rideId },
+                        {
+                            paymentMode: paymentMode,
+                            status: "Completed",
+                        }
+                    );
+
                     res.json({ message: "Success" });
                 } catch (error) {
                     res.json((error as Error).message);
@@ -101,8 +103,17 @@ export default {
                             "RideDetails.completedRides": 1,
                             "RideDetails.totalEarnings": amount,
                         },
-                        rideStatus:false
+                        isAvailable: true,
                     });
+
+                    await ride.findOneAndUpdate(
+                        { ride_id: rideId },
+                        {
+                            paymentMode: paymentMode,
+                            status: "Completed",
+                        }
+                    );
+
                     res.json({ message: "Success" });
                 } catch (error) {
                     res.json((error as Error).message);
@@ -111,9 +122,134 @@ export default {
         }
     },
 
+    paymentStripe: async (req: Request, res: Response) => {
+        const { amount } = req.body;
+        const rideId = req.query.rideId;
+
+        const stripe = new Stripe(process?.env.STRIPE_SECRET_KEY as string, {
+            apiVersion: "2023-08-16",
+        });
+
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ["card"],
+            line_items: [
+                {
+                    price_data: {
+                        currency: "inr",
+                        product_data: {
+                            name: "Safely-cab-booking",
+                        },
+                        unit_amount: amount * 100,
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: "payment",
+            success_url: `http://localhost:5173/rides?rideId=${rideId}`,
+            cancel_url: "http://localhost:5173/rides",
+        });
+
+        if (session) {
+            console.log(session, "session und");
+
+            try {
+                const rideData = await ride.findOne({ ride_id: rideId });
+                console.log(rideData, "ridedataa");
+                const userId = new ObjectId(rideData?.user_id);
+                const driverId = new ObjectId(rideData?.driver_id);
+
+                const driverData = await driver.findById(driverId);
+
+                const driverNewBalance = driverData?.wallet.balance + amount;
+                const driverTransaction = {
+                    date: new Date(),
+                    details: `Payment for the ride ${rideId}`,
+                    amount: amount,
+                    staus: "Credit",
+                };
+
+                await driver.findByIdAndUpdate(driverId, {
+                    $set: {
+                        "wallet.balance": driverNewBalance,
+                    },
+                    $push: {
+                        "wallet.transactions": driverTransaction,
+                    },
+                    $inc: {
+                        "RideDetails.completedRides": 1,
+                        "RideDetails.totalEarnings": amount,
+                    },
+                    isAvailable: true,
+                });
+                await user.findByIdAndUpdate(userId, {
+                    $inc: {
+                        "RideDetails.completedRides": 1,
+                    },
+                });
+
+                await ride.findOneAndUpdate(
+                    { ride_id: rideId },
+                    {
+                        paymentMode: "Card payment",
+                        status: "Completed",
+                    }
+                );
+                res.json({ id: session.id });
+            } catch (error) {
+                res.status(500).json((error as Error).message);
+            }
+        } else {
+            console.log("no session");
+
+            res.json({ message: "No session" });
+        }
+    },
+
     getUserData: async (req: Request, res: Response) => {
         const id = req.query.id;
         const response = await user.findById(id);
         res.json(response);
+    },
+
+    getAllrides: async (req: Request, res: Response) => {
+        const { user_id } = req.query;
+        const rideData = await ride.find({ user_id: user_id });
+        res.json(rideData);
+    },
+
+    getRideDetails: async (req: Request, res: Response) => {
+        const { ride_id } = req.query;
+        const rideData = await ride.findOne({ ride_id: ride_id });
+        const driverData = await driver.findById(rideData?.driver_id);
+        res.json({ rideData, driverData });
+    },
+
+    feedback: async (req: Request, res: Response) => {
+        const { _id } = req.query;
+        const { rating, feedback } = req.body;
+        try {
+            
+            const rideData = await ride.findByIdAndUpdate(
+                _id,
+                {
+                    $set: {
+                        rating: rating,
+                        feedback: feedback,
+                    },
+                },
+                { new: true }
+            );
+
+            await driver.findByIdAndUpdate(
+                rideData?.driver_id,{
+                    $inc:{
+                        "ratings" : 1
+                    }
+                }
+            )
+            res.json({ message: "Success" });
+        } catch (error) {
+            res.status(500).json((error as Error).message);
+        }
     },
 };

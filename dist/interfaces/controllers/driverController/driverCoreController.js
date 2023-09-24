@@ -31,4 +31,14 @@ exports.default = {
         const response = yield driver_1.default.findById(id);
         res.json(response);
     }),
+    getAllrides: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { driver_id } = req.query;
+        const rideData = yield ride_1.default.find({ driver_id: driver_id });
+        res.json(rideData);
+    }),
+    getRideDetails: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { ride_id } = req.query;
+        const rideData = yield ride_1.default.findOne({ ride_id: ride_id });
+        res.json(rideData);
+    }),
 };

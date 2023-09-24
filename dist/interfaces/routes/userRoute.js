@@ -18,7 +18,11 @@ userRoute.post('/uploadUserImage', multer_1.default.single('userImage'), registr
 userRoute.post('/checkLoginUser', loginController_1.default.loginUserCheck);
 userRoute.post('/checkGoogleLoginUser', loginController_1.default.GoogleLoginUserCheck);
 //rides
+userRoute.get('/userData', userCoreController_1.default.getUserData);
 userRoute.get('/getCurrentRide', userCoreController_1.default.getCurrentRide);
 userRoute.post('/payment', userCoreController_1.default.payment);
-userRoute.get('/userData', userCoreController_1.default.getUserData);
+userRoute.post('/payment-stripe', userCoreController_1.default.paymentStripe);
+userRoute.get('/getAllrides', userCoreController_1.default.getAllrides);
+userRoute.get('/getRideDetails', userCoreController_1.default.getRideDetails);
+userRoute.post('/feedback', userCoreController_1.default.feedback);
 exports.default = userRoute;

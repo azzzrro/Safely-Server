@@ -19,4 +19,16 @@ export default {
         const response = await driver.findById(id);
         res.json(response);
     },
+
+    getAllrides: async (req: Request, res: Response) => {
+        const { driver_id } = req.query;
+        const rideData = await ride.find({ driver_id : driver_id });
+        res.json(rideData);
+    },
+
+    getRideDetails: async (req: Request, res: Response) => {
+        const { ride_id } = req.query;
+        const rideData = await ride.findOne({ ride_id: ride_id });
+        res.json(rideData);
+    },
 };

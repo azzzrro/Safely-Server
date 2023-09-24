@@ -3,6 +3,8 @@ import { Server as SocketIOServer, Socket } from "socket.io";
 import Ride, { RideDetails } from "../entities/ride";
 import driver from "../entities/driver";
 import moment from "moment";
+import ride from "../entities/ride";
+import user from "../entities/user";
 
 
 export const generatePIN = () => {
@@ -74,7 +76,7 @@ export const setUpSocketIO = (server: HttpServer): void => {
 
                 if (distance <= 5) {
                     const driverIds = await driver
-                        .find({ "vehicle_details.model": rideDetails.model , account_status:{$in:["Good","Warning"]},rideStatus:false})
+                        .find({ "vehicle_details.model": rideDetails.model , account_status:{$in:["Good","Warning"]},isAvailable:true})
                         .select("_id")
                         .exec();
 
@@ -90,7 +92,7 @@ export const setUpSocketIO = (server: HttpServer): void => {
         });
 
         socket.on("acceptRide", async (acceptedRideData: RideDetails) => {
-            const currentDateTime = moment().format("YYYY-MM-DD hh:mm:ss A") as unknown as Date;
+            const currentDateTime = moment().format("YYYY-MM-DD");
 
             acceptedRideData.status = "Pending";
             acceptedRideData.date = currentDateTime;
@@ -104,7 +106,7 @@ export const setUpSocketIO = (server: HttpServer): void => {
             const newRide = new Ride(acceptedRideData);
             const response = await newRide.save();
             await driver.findByIdAndUpdate(acceptedRideData.driver_id,{
-                rideStatus:true
+                isAvailable:false
             })
 
             console.log(response, "response after saving");
@@ -141,6 +143,33 @@ export const setUpSocketIO = (server: HttpServer): void => {
 
         socket.on("paymentCompleted",()=>{
             io.emit("driverPaymentSuccess")
+        })
+
+        socket.on("rideCancelled", async (ride_id)=>{
+            try {
+                
+                const rideData = await ride.findOne({ride_id:ride_id})
+    
+                await ride.findOneAndUpdate({ride_id:ride_id},{
+                    $set:{
+                        status:"Cancelled"
+                    }
+                })
+                await driver.findByIdAndUpdate(rideData?.driver_id,{
+                    $set:{
+                        isAvailable:true
+                    }
+                })
+                await user.findByIdAndUpdate(rideData?.user_id,{
+                    $inc: {
+                        "RideDetails.cancelledRides": 1,
+                    },
+                })
+
+                io.emit("rideCancelled")
+            } catch (error) {
+                console.log((error as Error).message);
+            }
         })
 
         socket.on("disconnect", () => {

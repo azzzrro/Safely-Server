@@ -97,10 +97,6 @@ const DriverSchema = new mongoose_1.Schema({
             type: Number,
             default: 0,
         },
-        totalEarnings: {
-            type: Number,
-            default: 0
-        },
         transactions: [
             {
                 date: {
@@ -127,10 +123,18 @@ const DriverSchema = new mongoose_1.Schema({
             default: 0,
             type: Number,
         },
+        totalEarnings: {
+            type: Number,
+            default: 0
+        }
     },
-    rideStatus: {
+    isAvailable: {
         type: Boolean,
-        default: false
+        default: true
+    },
+    ratings: {
+        type: Number,
+        default: 0
     }
 });
 exports.default = mongoose_1.default.model("Driver", DriverSchema);
