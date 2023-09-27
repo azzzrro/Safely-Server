@@ -19,6 +19,7 @@ adminRoute.get('/userData',adminController.getUserData)
 adminRoute.get('/verifyUser',adminController.verifyUser)
 adminRoute.post('/rejectUser',adminController.rejectUser)
 adminRoute.post('/updateUserStatus',adminController.updateUserStatus)
+adminRoute.get('/getDashboardData',adminController.dashboardData)
 
 
 export default adminRoute

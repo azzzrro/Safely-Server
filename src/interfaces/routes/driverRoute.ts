@@ -31,9 +31,12 @@ driverRouter.post('/checkGoogleLoginDriver',loginController.GoogleLoginDriverChe
 
 //ride
 driverRouter.get('/getCurrentRide',driverCoreController.getCurrentRide)
-driverRouter.get('/driverData',driverCoreController.getDriverData)
 driverRouter.get('/getAllrides',driverCoreController.getAllrides)
 driverRouter.get('/getRideDetails',driverCoreController.getRideDetails)
+driverRouter.get('/dashboardData',driverCoreController.dashboardData)
+driverRouter.get('/driverData',driverCoreController.getDriverData)
+driverRouter.post('/profileUpdate',driverCoreController.profileUpdate)
+driverRouter.get('/updateStatus',driverCoreController.updateStatus)
 
 
 export default driverRouter

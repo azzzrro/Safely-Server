@@ -5,6 +5,7 @@ import user from "../../../entities/user";
 import { ObjectId } from "mongodb";
 import Stripe from "stripe";
 
+
 export default {
     getCurrentRide: async (req: Request, res: Response) => {
         const rideId = req.query.rideId;
@@ -34,7 +35,6 @@ export default {
             console.log("undalloooo");
             console.log("heeeeee");
 
-            
             if (paymentMode === "COD") {
                 try {
                     await driver.findByIdAndUpdate(driverId, {
@@ -89,7 +89,7 @@ export default {
                         date: new Date(),
                         details: `Payment for the ride ${rideId}`,
                         amount: amount,
-                        staus: "Credit",
+                        status: "Credit",
                     };
 
                     await driver.findByIdAndUpdate(driverId, {
@@ -165,7 +165,7 @@ export default {
                     date: new Date(),
                     details: `Payment for the ride ${rideId}`,
                     amount: amount,
-                    staus: "Credit",
+                    status: "Credit",
                 };
 
                 await driver.findByIdAndUpdate(driverId, {
@@ -200,7 +200,6 @@ export default {
             }
         } else {
             console.log("no session");
-
             res.json({ message: "No session" });
         }
     },
@@ -228,7 +227,6 @@ export default {
         const { _id } = req.query;
         const { rating, feedback } = req.body;
         try {
-            
             const rideData = await ride.findByIdAndUpdate(
                 _id,
                 {
@@ -240,14 +238,96 @@ export default {
                 { new: true }
             );
 
-            await driver.findByIdAndUpdate(
-                rideData?.driver_id,{
-                    $inc:{
-                        "ratings" : 1
-                    }
-                }
-            )
+            await driver.findByIdAndUpdate(rideData?.driver_id, {
+                $inc: {
+                    ratings: 1,
+                },
+            });
             res.json({ message: "Success" });
+        } catch (error) {
+            res.status(500).json((error as Error).message);
+        }
+    },
+
+    profileUpdate: async (req: Request, res: Response) => {
+        const { user_id } = req.query;
+        const { name, email, mobile } = req.body;
+
+        try {
+            const updateFields: { name?: string; email?: string; mobile?: number } = {};
+
+            if (name) {
+                updateFields.name = name;
+            }
+
+            if (email) {
+                updateFields.email = email;
+            }
+
+            if (mobile) {
+                updateFields.mobile = mobile;
+            }
+
+            const userData = await user.findOneAndUpdate({ _id: user_id }, { $set: updateFields }, { new: true }).exec();
+
+            res.json({ message: "Success", userData });
+        } catch (error) {
+            res.status(500).json({ message: (error as Error).message });
+        }
+    },
+
+    addbalance: async (req: Request, res: Response) => {
+        try {
+            const { balance } = req.body;
+            const user_id = req.query.user_id;
+
+            const stripe = new Stripe(process?.env.STRIPE_SECRET_KEY as string, {
+                apiVersion: "2023-08-16",
+            });
+
+            const session = await stripe.checkout.sessions.create({
+                payment_method_types: ["card"],
+                line_items: [
+                    {
+                        price_data: {
+                            currency: "inr",
+                            product_data: {
+                                name: "Wallet recharge",
+                            },
+                            unit_amount: balance * 100,
+                        },
+                        quantity: 1,
+                    },
+                ],
+                mode: "payment",
+                success_url: `http://localhost:5173/profile`,
+                cancel_url: "http://localhost:5173/profile",
+            });
+
+            if (session) {
+                const userData = await user.findById(user_id);
+                const userNewBalance = userData?.wallet.balance + balance;
+
+                const userTransaction = {
+                    date: new Date(),
+                    details: `Wallet recharged`,
+                    amount: balance,
+                    status: "Credit",
+                };
+
+                await user.findByIdAndUpdate(user_id, {
+                    $set: {
+                        "wallet.balance": userNewBalance,
+                    },
+                    $push: {
+                        "wallet.transactions": userTransaction,
+                    },
+                });
+
+                res.json({ id: session.id });
+            } else {
+                res.json({ message: "No session" });
+            }
         } catch (error) {
             res.status(500).json((error as Error).message);
         }

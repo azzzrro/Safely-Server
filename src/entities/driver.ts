@@ -13,6 +13,7 @@ export interface DriverInterface extends Document {
     account_status: string;
     identification: boolean;
     vehicle_details: Vehicle;
+    joiningDate : Date;
     wallet: {
         balance: number;
         transactions: {
@@ -75,7 +76,10 @@ const DriverSchema: Schema = new Schema({
     referral_code: {
         type: String,
     },
-
+    joiningDate:{
+        type:Date,
+        deafult:Date.now()
+    },
     aadhar: {
         aadharId: {
             type: String,

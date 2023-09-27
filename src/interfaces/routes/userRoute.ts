@@ -25,5 +25,7 @@ userRoute.post('/payment-stripe',userCoreController.paymentStripe)
 userRoute.get('/getAllrides',userCoreController.getAllrides)
 userRoute.get('/getRideDetails',userCoreController.getRideDetails)
 userRoute.post('/feedback',userCoreController.feedback)
+userRoute.post('/profileUpdate',userCoreController.profileUpdate)
+userRoute.post('/addWalletBalance',userCoreController.addbalance)
 
 export default userRoute

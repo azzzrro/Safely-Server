@@ -25,4 +25,6 @@ userRoute.post('/payment-stripe', userCoreController_1.default.paymentStripe);
 userRoute.get('/getAllrides', userCoreController_1.default.getAllrides);
 userRoute.get('/getRideDetails', userCoreController_1.default.getRideDetails);
 userRoute.post('/feedback', userCoreController_1.default.feedback);
+userRoute.post('/profileUpdate', userCoreController_1.default.profileUpdate);
+userRoute.post('/addWalletBalance', userCoreController_1.default.addbalance);
 exports.default = userRoute;

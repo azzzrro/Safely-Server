@@ -13,6 +13,7 @@ export interface UserInterface extends Document {
     account_status: string;
     verified: boolean;
     identification: boolean;
+    joiningDate: string;
     wallet: {
         balance: number;
         transactions: {
@@ -22,10 +23,10 @@ export interface UserInterface extends Document {
             status: string;
         }[];
     };
-    RideDetails:{
-        completedRides:number
-        cancelledRides:number
-    }
+    RideDetails: {
+        completedRides: number;
+        cancelledRides: number;
+    };
 }
 
 const UserSchema: Schema = new Schema({
@@ -51,7 +52,10 @@ const UserSchema: Schema = new Schema({
     referral_code: {
         type: String,
     },
-
+    joiningDate: {
+        type: String,
+        deafult: Date.now(),
+    },
     id_type: {
         type: String,
     },

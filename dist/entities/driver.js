@@ -47,6 +47,10 @@ const DriverSchema = new mongoose_1.Schema({
     referral_code: {
         type: String,
     },
+    joiningDate: {
+        type: Date,
+        deafult: Date.now()
+    },
     aadhar: {
         aadharId: {
             type: String,

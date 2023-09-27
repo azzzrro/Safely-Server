@@ -27,7 +27,10 @@ driverRouter.post('/checkLoginDriver', loginController_1.default.loginDriverChec
 driverRouter.post('/checkGoogleLoginDriver', loginController_1.default.GoogleLoginDriverCheck);
 //ride
 driverRouter.get('/getCurrentRide', driverCoreController_1.default.getCurrentRide);
-driverRouter.get('/driverData', driverCoreController_1.default.getDriverData);
 driverRouter.get('/getAllrides', driverCoreController_1.default.getAllrides);
 driverRouter.get('/getRideDetails', driverCoreController_1.default.getRideDetails);
+driverRouter.get('/dashboardData', driverCoreController_1.default.dashboardData);
+driverRouter.get('/driverData', driverCoreController_1.default.getDriverData);
+driverRouter.post('/profileUpdate', driverCoreController_1.default.profileUpdate);
+driverRouter.get('/updateStatus', driverCoreController_1.default.updateStatus);
 exports.default = driverRouter;

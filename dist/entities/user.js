@@ -47,6 +47,10 @@ const UserSchema = new mongoose_1.Schema({
     referral_code: {
         type: String,
     },
+    joiningDate: {
+        type: String,
+        deafult: Date.now(),
+    },
     id_type: {
         type: String,
     },

@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const driver_1 = __importDefault(require("../../../entities/driver"));
 const nodemailer_1 = require("../../../services/nodemailer");
 const user_1 = __importDefault(require("../../../entities/user"));
+const ride_1 = __importDefault(require("../../../entities/ride"));
 exports.default = {
     adminLogin: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { email, password } = req.body;
@@ -120,8 +121,8 @@ exports.default = {
         let newStatus;
         const id = req.query.id;
         const { reason, status } = req.body;
-        if (status === 'Block')
-            newStatus = 'Blocked';
+        if (status === "Block")
+            newStatus = "Blocked";
         else
             newStatus = status;
         try {
@@ -265,8 +266,8 @@ exports.default = {
         let newStatus;
         const id = req.query.id;
         const { reason, status } = req.body;
-        if (status === 'Block')
-            newStatus = 'Blocked';
+        if (status === "Block")
+            newStatus = "Blocked";
         else
             newStatus = status;
         try {
@@ -305,6 +306,101 @@ exports.default = {
         }
         catch (error) {
             res.json(error);
+        }
+    }),
+    dashboardData: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const userData = yield user_1.default
+                .aggregate([
+                {
+                    $group: {
+                        _id: { $month: "$joiningDate" },
+                        userCount: { $sum: 1 },
+                    },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        month: "$_id",
+                        userCount: 1,
+                    },
+                },
+                {
+                    $sort: { month: 1 },
+                },
+            ])
+                .exec();
+            const driverData = yield driver_1.default
+                .aggregate([
+                {
+                    $group: {
+                        _id: { $month: "$joiningDate" },
+                        driverCount: { $sum: 1 },
+                    },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        month: "$_id",
+                        driverCount: 1,
+                    },
+                },
+                {
+                    $sort: { month: 1 },
+                },
+            ])
+                .exec();
+            const monthNames = [
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December",
+            ];
+            const chardData = userData.map((userItem, index) => ({
+                name: monthNames[userItem.month - 1],
+                users: userItem.userCount,
+                drivers: driverData[index].driverCount,
+            }));
+            const pieChartData = yield ride_1.default
+                .aggregate([
+                {
+                    $match: {
+                        status: { $nin: ["Cancelled", "Pending"] },
+                    },
+                },
+                {
+                    $group: {
+                        _id: "$paymentMode",
+                        count: { $sum: 1 },
+                    },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        name: "$_id",
+                        value: "$count",
+                    },
+                },
+            ])
+                .exec();
+            const totalUsers = yield user_1.default.countDocuments();
+            const totalDrivers = yield driver_1.default.countDocuments();
+            const blockedUsers = yield user_1.default.find({ account_status: "Blocked" }).countDocuments();
+            const blockedDrivers = yield driver_1.default.find({ account_status: "Blocked" }).countDocuments();
+            const newUsers = yield user_1.default.find({ account_status: "Pending" }).countDocuments();
+            const newDrivers = yield driver_1.default.find({ account_status: "Pending" }).countDocuments();
+            res.json({ chardData, pieChartData, dashboardData: { totalUsers, totalDrivers, blockedUsers, blockedDrivers, newUsers, newDrivers } });
+        }
+        catch (error) {
+            res.status(500).json(error.message);
         }
     }),
 };

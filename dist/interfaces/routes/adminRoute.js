@@ -21,4 +21,5 @@ adminRoute.get('/userData', adminController_1.default.getUserData);
 adminRoute.get('/verifyUser', adminController_1.default.verifyUser);
 adminRoute.post('/rejectUser', adminController_1.default.rejectUser);
 adminRoute.post('/updateUserStatus', adminController_1.default.updateUserStatus);
+adminRoute.get('/getDashboardData', adminController_1.default.dashboardData);
 exports.default = adminRoute;

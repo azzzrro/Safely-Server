@@ -89,7 +89,7 @@ exports.default = {
                         date: new Date(),
                         details: `Payment for the ride ${rideId}`,
                         amount: amount,
-                        staus: "Credit",
+                        status: "Credit",
                     };
                     yield driver_1.default.findByIdAndUpdate(driverId, {
                         $set: {
@@ -153,7 +153,7 @@ exports.default = {
                     date: new Date(),
                     details: `Payment for the ride ${rideId}`,
                     amount: amount,
-                    staus: "Credit",
+                    status: "Credit",
                 };
                 yield driver_1.default.findByIdAndUpdate(driverId, {
                     $set: {
@@ -216,10 +216,83 @@ exports.default = {
             }, { new: true });
             yield driver_1.default.findByIdAndUpdate(rideData === null || rideData === void 0 ? void 0 : rideData.driver_id, {
                 $inc: {
-                    "ratings": 1
-                }
+                    ratings: 1,
+                },
             });
             res.json({ message: "Success" });
+        }
+        catch (error) {
+            res.status(500).json(error.message);
+        }
+    }),
+    profileUpdate: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { user_id } = req.query;
+        const { name, email, mobile } = req.body;
+        try {
+            const updateFields = {};
+            if (name) {
+                updateFields.name = name;
+            }
+            if (email) {
+                updateFields.email = email;
+            }
+            if (mobile) {
+                updateFields.mobile = mobile;
+            }
+            const userData = yield user_1.default.findOneAndUpdate({ _id: user_id }, { $set: updateFields }, { new: true }).exec();
+            res.json({ message: "Success", userData });
+        }
+        catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }),
+    addbalance: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { balance } = req.body;
+            const user_id = req.query.user_id;
+            const stripe = new stripe_1.default(process === null || process === void 0 ? void 0 : process.env.STRIPE_SECRET_KEY, {
+                apiVersion: "2023-08-16",
+            });
+            const session = yield stripe.checkout.sessions.create({
+                payment_method_types: ["card"],
+                line_items: [
+                    {
+                        price_data: {
+                            currency: "inr",
+                            product_data: {
+                                name: "Wallet recharge",
+                            },
+                            unit_amount: balance * 100,
+                        },
+                        quantity: 1,
+                    },
+                ],
+                mode: "payment",
+                success_url: `http://localhost:5173/profile`,
+                cancel_url: "http://localhost:5173/profile",
+            });
+            if (session) {
+                const userData = yield user_1.default.findById(user_id);
+                const userNewBalance = (userData === null || userData === void 0 ? void 0 : userData.wallet.balance) + balance;
+                const userTransaction = {
+                    date: new Date(),
+                    details: `Wallet recharged`,
+                    amount: balance,
+                    status: "Credit",
+                };
+                yield user_1.default.findByIdAndUpdate(user_id, {
+                    $set: {
+                        "wallet.balance": userNewBalance,
+                    },
+                    $push: {
+                        "wallet.transactions": userTransaction,
+                    },
+                });
+                res.json({ id: session.id });
+            }
+            else {
+                res.json({ message: "No session" });
+            }
         }
         catch (error) {
             res.status(500).json(error.message);
