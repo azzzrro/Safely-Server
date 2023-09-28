@@ -17,6 +17,7 @@ const driver_1 = __importDefault(require("../../../entities/driver"));
 const user_1 = __importDefault(require("../../../entities/user"));
 const mongodb_1 = require("mongodb");
 const stripe_1 = __importDefault(require("stripe"));
+const moment_1 = __importDefault(require("moment"));
 exports.default = {
     getCurrentRide: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const rideId = req.query.rideId;
@@ -64,13 +65,13 @@ exports.default = {
                     res.json(error.message);
                 }
             }
-            else if (paymentMode === "wallet") {
+            else if (paymentMode === "Wallet") {
                 try {
                     const userNewBalance = (userData === null || userData === void 0 ? void 0 : userData.wallet.balance) - amount;
                     const userTransaction = {
                         date: new Date(),
                         details: `Payment for the ride ${rideId}`,
-                        amount: -amount,
+                        amount: amount,
                         status: "Debit",
                     };
                     yield user_1.default.findByIdAndUpdate(userId, {
@@ -191,18 +192,41 @@ exports.default = {
     getUserData: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const id = req.query.id;
         const response = yield user_1.default.findById(id);
-        res.json(response);
+        if (response) {
+            const formattedDate = (0, moment_1.default)(response.joiningDate).format("dddd, DD-MM-YYYY");
+            const formattedRideData = Object.assign(Object.assign({}, response.toObject()), { formattedDate });
+            const formattedTransactions = formattedRideData.wallet.transactions.map((transactions) => (Object.assign(Object.assign({}, transactions), { formattedDate: (0, moment_1.default)(transactions.date).format("dddd, DD-MM-YYYY") })));
+            const newData = Object.assign(Object.assign({}, formattedRideData), { formattedTransactions });
+            console.log(newData);
+            res.json(newData);
+        }
+        else {
+            res.status(500).json({ message: "Soemthing Internal Error" });
+        }
     }),
     getAllrides: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { user_id } = req.query;
-        const rideData = yield ride_1.default.find({ user_id: user_id });
-        res.json(rideData);
+        const rideData = yield ride_1.default.find({ user_id: user_id }).sort({ date: -1 });
+        if (rideData) {
+            const formattedData = rideData.map((ride) => (Object.assign(Object.assign({}, ride.toObject()), { date: (0, moment_1.default)(ride.date).format("dddd, DD-MM-YYYY") })));
+            res.json(formattedData);
+        }
+        else {
+            res.status(500).json({ message: "Soemthing Internal Error" });
+        }
     }),
     getRideDetails: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { ride_id } = req.query;
         const rideData = yield ride_1.default.findOne({ ride_id: ride_id });
         const driverData = yield driver_1.default.findById(rideData === null || rideData === void 0 ? void 0 : rideData.driver_id);
-        res.json({ rideData, driverData });
+        if (rideData) {
+            const formattedDate = (0, moment_1.default)(rideData.date).format("dddd, DD-MM-YYYY");
+            const formattedRideData = Object.assign(Object.assign({}, rideData.toObject()), { formattedDate });
+            res.json({ rideData: formattedRideData, driverData });
+        }
+        else {
+            res.status(500).json({ message: "Soemthing Internal Error" });
+        }
     }),
     feedback: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { _id } = req.query;
@@ -273,22 +297,24 @@ exports.default = {
             });
             if (session) {
                 const userData = yield user_1.default.findById(user_id);
-                const userNewBalance = (userData === null || userData === void 0 ? void 0 : userData.wallet.balance) + balance;
-                const userTransaction = {
-                    date: new Date(),
-                    details: `Wallet recharged`,
-                    amount: balance,
-                    status: "Credit",
-                };
-                yield user_1.default.findByIdAndUpdate(user_id, {
-                    $set: {
-                        "wallet.balance": userNewBalance,
-                    },
-                    $push: {
-                        "wallet.transactions": userTransaction,
-                    },
-                });
-                res.json({ id: session.id });
+                if (userData === null || userData === void 0 ? void 0 : userData.wallet.balance) {
+                    const userNewBalance = userData.wallet.balance + Number(balance);
+                    const userTransaction = {
+                        date: new Date(),
+                        details: `Wallet recharged`,
+                        amount: balance,
+                        status: "Credit",
+                    };
+                    yield user_1.default.findByIdAndUpdate(user_id, {
+                        $set: {
+                            "wallet.balance": userNewBalance,
+                        },
+                        $push: {
+                            "wallet.transactions": userTransaction,
+                        },
+                    });
+                    res.json({ id: session.id });
+                }
             }
             else {
                 res.json({ message: "No session" });

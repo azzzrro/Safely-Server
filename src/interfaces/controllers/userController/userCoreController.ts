@@ -4,7 +4,7 @@ import driver from "../../../entities/driver";
 import user from "../../../entities/user";
 import { ObjectId } from "mongodb";
 import Stripe from "stripe";
-
+import moment from "moment";
 
 export default {
     getCurrentRide: async (req: Request, res: Response) => {
@@ -62,13 +62,13 @@ export default {
                 } catch (error) {
                     res.json((error as Error).message);
                 }
-            } else if (paymentMode === "wallet") {
+            } else if (paymentMode === "Wallet") {
                 try {
                     const userNewBalance = userData?.wallet.balance - amount;
                     const userTransaction = {
                         date: new Date(),
                         details: `Payment for the ride ${rideId}`,
-                        amount: -amount,
+                        amount: amount,
                         status: "Debit",
                     };
 
@@ -207,20 +207,46 @@ export default {
     getUserData: async (req: Request, res: Response) => {
         const id = req.query.id;
         const response = await user.findById(id);
-        res.json(response);
+        if(response){
+            const formattedDate = moment(response.joiningDate).format("dddd, DD-MM-YYYY")
+            const formattedRideData = { ...response.toObject(), formattedDate };
+            const formattedTransactions = formattedRideData.wallet.transactions.map((transactions)=>({
+                ...transactions,
+                formattedDate:moment(transactions.date).format("dddd, DD-MM-YYYY")
+            }))
+            const newData = {...formattedRideData,formattedTransactions}
+            console.log(newData);
+            res.json(newData);
+        }else{
+            res.status(500).json({message:"Soemthing Internal Error"})
+        }
     },
 
     getAllrides: async (req: Request, res: Response) => {
         const { user_id } = req.query;
-        const rideData = await ride.find({ user_id: user_id });
-        res.json(rideData);
+        const rideData = await ride.find({ user_id: user_id }).sort({ date: -1 });
+        if (rideData) {
+            const formattedData = rideData.map((ride) => ({
+                ...ride.toObject(),
+                date: moment(ride.date).format("dddd, DD-MM-YYYY"),
+            }));
+            res.json(formattedData);
+        }else{
+            res.status(500).json({message:"Soemthing Internal Error"})
+        }
     },
 
     getRideDetails: async (req: Request, res: Response) => {
         const { ride_id } = req.query;
         const rideData = await ride.findOne({ ride_id: ride_id });
         const driverData = await driver.findById(rideData?.driver_id);
-        res.json({ rideData, driverData });
+        if(rideData){
+            const formattedDate = moment(rideData.date).format("dddd, DD-MM-YYYY")
+            const formattedRideData = { ...rideData.toObject(), formattedDate };
+            res.json({ rideData:formattedRideData, driverData });
+        }else{
+            res.status(500).json({message:"Soemthing Internal Error"})
+        }
     },
 
     feedback: async (req: Request, res: Response) => {
@@ -306,25 +332,26 @@ export default {
 
             if (session) {
                 const userData = await user.findById(user_id);
-                const userNewBalance = userData?.wallet.balance + balance;
+                if (userData?.wallet.balance) {
+                    const userNewBalance = userData.wallet.balance + Number(balance);
+                    const userTransaction = {
+                        date: new Date(),
+                        details: `Wallet recharged`,
+                        amount: balance,
+                        status: "Credit",
+                    };
 
-                const userTransaction = {
-                    date: new Date(),
-                    details: `Wallet recharged`,
-                    amount: balance,
-                    status: "Credit",
-                };
+                    await user.findByIdAndUpdate(user_id, {
+                        $set: {
+                            "wallet.balance": userNewBalance,
+                        },
+                        $push: {
+                            "wallet.transactions": userTransaction,
+                        },
+                    });
 
-                await user.findByIdAndUpdate(user_id, {
-                    $set: {
-                        "wallet.balance": userNewBalance,
-                    },
-                    $push: {
-                        "wallet.transactions": userTransaction,
-                    },
-                });
-
-                res.json({ id: session.id });
+                    res.json({ id: session.id });
+                }
             } else {
                 res.json({ message: "No session" });
             }

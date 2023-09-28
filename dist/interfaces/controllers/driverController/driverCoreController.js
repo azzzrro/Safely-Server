@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const ride_1 = __importDefault(require("../../../entities/ride"));
 const driver_1 = __importDefault(require("../../../entities/driver"));
+const moment_1 = __importDefault(require("moment"));
 exports.default = {
     getCurrentRide: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const rideId = req.query.rideId;
@@ -28,8 +29,14 @@ exports.default = {
     }),
     getAllrides: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { driver_id } = req.query;
-        const rideData = yield ride_1.default.find({ driver_id: driver_id });
-        res.json(rideData);
+        const rideData = yield ride_1.default.find({ driver_id: driver_id }).sort({ date: -1 });
+        if (rideData) {
+            const formattedData = rideData.map((ride) => (Object.assign(Object.assign({}, ride.toObject()), { date: (0, moment_1.default)(ride.date).format("dddd, DD-MM-YYYY") })));
+            res.json(formattedData);
+        }
+        else {
+            res.status(500).json({ message: "Soemthing Internal Error" });
+        }
     }),
     getRideDetails: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { ride_id } = req.query;
