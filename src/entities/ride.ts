@@ -89,6 +89,7 @@ const RideSchema: Schema = new Schema({
     },
     date: {
         type: Date,
+        default: Date.now()
     },
     status: {
         type: String,

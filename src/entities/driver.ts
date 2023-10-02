@@ -13,7 +13,7 @@ export interface DriverInterface extends Document {
     account_status: string;
     identification: boolean;
     vehicle_details: Vehicle;
-    joiningDate : Date;
+    joiningDate: Date;
     wallet: {
         balance: number;
         transactions: {
@@ -23,12 +23,19 @@ export interface DriverInterface extends Document {
             status: string;
         }[];
     };
-    RideDetails:{
-        completedRides:number
-        cancelledRides:number
-        totalEarnings:number
-    }
-    isAvailable:boolean
+    RideDetails: {
+        completedRides: number;
+        cancelledRides: number;
+        totalEarnings: number;
+    };
+    isAvailable: boolean;
+    feedbacks: [
+        {
+            feedback: string;
+            rating: number;
+            date:Date
+        }
+    ];
 }
 
 interface Aadhar {
@@ -76,9 +83,9 @@ const DriverSchema: Schema = new Schema({
     referral_code: {
         type: String,
     },
-    joiningDate:{
-        type:Date,
-        deafult:Date.now()
+    joiningDate: {
+        type: Date,
+        deafult: Date.now(),
     },
     aadhar: {
         aadharId: {
@@ -154,26 +161,40 @@ const DriverSchema: Schema = new Schema({
     },
     RideDetails: {
         completedRides: {
-            default:0,
+            default: 0,
             type: Number,
         },
         cancelledRides: {
-            default:0,
+            default: 0,
             type: Number,
         },
         totalEarnings: {
             type: Number,
-            default:0
-        }
+            default: 0,
+        },
     },
-    isAvailable:{
-        type:Boolean,
-        default:true
+    isAvailable: {
+        type: Boolean,
+        default: true,
     },
-    ratings:{
+    totalRatings:{
         type:Number,
-        default:0
-    }
+        default: 0,
+
+    },
+    feedbacks: [
+        {
+            feedback: {
+                type: String,
+            },
+            rating: {
+                type: Number,
+            },
+            date:{
+                type:Date
+            }
+        },
+    ],
 });
 
 export default mongoose.model<DriverInterface>("Driver", DriverSchema);

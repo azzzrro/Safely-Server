@@ -2,7 +2,6 @@ import { Server as HttpServer } from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
 import Ride, { RideDetails } from "../entities/ride";
 import driver from "../entities/driver";
-import moment from "moment";
 import ride from "../entities/ride";
 import user from "../entities/user";
 
@@ -92,10 +91,8 @@ export const setUpSocketIO = (server: HttpServer): void => {
         });
 
         socket.on("acceptRide", async (acceptedRideData: RideDetails) => {
-            const currentDateTime = moment().format("YYYY-MM-DD");
 
             acceptedRideData.status = "Pending";
-            acceptedRideData.date = currentDateTime;
             acceptedRideData.pin = generatePIN();
 
             acceptedRideData.driverCoordinates = {};
@@ -141,8 +138,8 @@ export const setUpSocketIO = (server: HttpServer): void => {
             io.emit("userPaymentPage")
         })
 
-        socket.on("paymentCompleted",()=>{
-            io.emit("driverPaymentSuccess")
+        socket.on("paymentCompleted",(paymentMode:string,amount:number)=>{
+            io.emit("driverPaymentSuccess",paymentMode,amount)
         })
 
         socket.on("rideCancelled", async (ride_id)=>{
@@ -170,6 +167,12 @@ export const setUpSocketIO = (server: HttpServer): void => {
             } catch (error) {
                 console.log((error as Error).message);
             }
+        })
+
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        socket.on("chat",(chat:any)=>{
+            io.emit("chat",chat)
         })
 
         socket.on("disconnect", () => {

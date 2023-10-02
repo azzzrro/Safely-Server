@@ -41,9 +41,17 @@ exports.default = {
     getRideDetails: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { ride_id } = req.query;
         const rideData = yield ride_1.default.findOne({ ride_id: ride_id });
-        res.json(rideData);
+        if (rideData) {
+            const formattedDate = (0, moment_1.default)(rideData.date).format("dddd, DD-MM-YYYY");
+            const formattedRideData = Object.assign(Object.assign({}, rideData.toObject()), { formattedDate });
+            res.json(formattedRideData);
+        }
+        else {
+            res.status(500).json({ message: "Soemthing Internal Error" });
+        }
     }),
     dashboardData: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        var _a;
         const { driver_id } = req.query;
         try {
             const data = yield ride_1.default
@@ -135,7 +143,7 @@ exports.default = {
                 },
             ])
                 .exec();
-            res.json({ chartData, pieChartData, driverData, CurrentMonthRides: count[0].totalCount });
+            res.json({ chartData, pieChartData, driverData, CurrentMonthRides: (_a = count[0]) === null || _a === void 0 ? void 0 : _a.totalCount });
         }
         catch (error) {
             res.status(500).json(error.message);
@@ -144,7 +152,13 @@ exports.default = {
     getDriverData: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { driver_id } = req.query;
         const driverData = yield driver_1.default.findById(driver_id);
-        res.json(driverData);
+        if (driverData) {
+            const formattedRideDate = Object.assign({}, driverData === null || driverData === void 0 ? void 0 : driverData.toObject());
+            const formattedFeedbacks = formattedRideDate === null || formattedRideDate === void 0 ? void 0 : formattedRideDate.feedbacks.map((feedbacks) => (Object.assign(Object.assign({}, feedbacks), { formattedDate: (0, moment_1.default)(feedbacks.date).format("DD-MM-YYYY") })));
+            const newData = Object.assign(Object.assign({}, formattedRideDate), { formattedFeedbacks });
+            console.log(newData);
+            res.json(newData);
+        }
     }),
     profileUpdate: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { driver_id } = req.query;

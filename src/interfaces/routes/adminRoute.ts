@@ -20,6 +20,8 @@ adminRoute.get('/verifyUser',adminController.verifyUser)
 adminRoute.post('/rejectUser',adminController.rejectUser)
 adminRoute.post('/updateUserStatus',adminController.updateUserStatus)
 adminRoute.get('/getDashboardData',adminController.dashboardData)
+adminRoute.get('/driverFeedbacks',adminController.feedbacks)
+adminRoute.get('/getDriverRides',adminController.getDriverRides)
 
 
 export default adminRoute

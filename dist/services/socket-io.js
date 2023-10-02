@@ -16,7 +16,6 @@ exports.setUpSocketIO = exports.calculateDistance = exports.generatePIN = void 0
 const socket_io_1 = require("socket.io");
 const ride_1 = __importDefault(require("../entities/ride"));
 const driver_1 = __importDefault(require("../entities/driver"));
-const moment_1 = __importDefault(require("moment"));
 const ride_2 = __importDefault(require("../entities/ride"));
 const user_1 = __importDefault(require("../entities/user"));
 const generatePIN = () => {
@@ -83,9 +82,7 @@ const setUpSocketIO = (server) => {
             }
         }));
         socket.on("acceptRide", (acceptedRideData) => __awaiter(void 0, void 0, void 0, function* () {
-            const currentDateTime = (0, moment_1.default)().format("YYYY-MM-DD");
             acceptedRideData.status = "Pending";
-            acceptedRideData.date = currentDateTime;
             acceptedRideData.pin = (0, exports.generatePIN)();
             acceptedRideData.driverCoordinates = {};
             acceptedRideData.driverCoordinates.latitude = driverLatitude;
@@ -120,8 +117,8 @@ const setUpSocketIO = (server) => {
             console.log("server response getting");
             io.emit("userPaymentPage");
         });
-        socket.on("paymentCompleted", () => {
-            io.emit("driverPaymentSuccess");
+        socket.on("paymentCompleted", (paymentMode, amount) => {
+            io.emit("driverPaymentSuccess", paymentMode, amount);
         });
         socket.on("rideCancelled", (ride_id) => __awaiter(void 0, void 0, void 0, function* () {
             try {
@@ -147,6 +144,10 @@ const setUpSocketIO = (server) => {
                 console.log(error.message);
             }
         }));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        socket.on("chat", (chat) => {
+            io.emit("chat", chat);
+        });
         socket.on("disconnect", () => {
             console.log("Client-side disconnected:", socket.id);
         });

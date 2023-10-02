@@ -81,6 +81,7 @@ const RideSchema = new mongoose_1.Schema({
     },
     date: {
         type: Date,
+        default: Date.now()
     },
     status: {
         type: String,

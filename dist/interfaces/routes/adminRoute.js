@@ -22,4 +22,6 @@ adminRoute.get('/verifyUser', adminController_1.default.verifyUser);
 adminRoute.post('/rejectUser', adminController_1.default.rejectUser);
 adminRoute.post('/updateUserStatus', adminController_1.default.updateUserStatus);
 adminRoute.get('/getDashboardData', adminController_1.default.dashboardData);
+adminRoute.get('/driverFeedbacks', adminController_1.default.feedbacks);
+adminRoute.get('/getDriverRides', adminController_1.default.getDriverRides);
 exports.default = adminRoute;

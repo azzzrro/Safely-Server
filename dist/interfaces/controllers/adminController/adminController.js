@@ -16,6 +16,7 @@ const driver_1 = __importDefault(require("../../../entities/driver"));
 const nodemailer_1 = require("../../../services/nodemailer");
 const user_1 = __importDefault(require("../../../entities/user"));
 const ride_1 = __importDefault(require("../../../entities/ride"));
+const moment_1 = __importDefault(require("moment"));
 exports.default = {
     adminLogin: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { email, password } = req.body;
@@ -33,7 +34,13 @@ exports.default = {
     getDriverData: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const id = req.query.id;
         const response = yield driver_1.default.findById(id);
-        res.json(response);
+        if (response) {
+            const formattedRideDate = Object.assign({}, response === null || response === void 0 ? void 0 : response.toObject());
+            const formattedFeedbacks = formattedRideDate === null || formattedRideDate === void 0 ? void 0 : formattedRideDate.feedbacks.map((feedbacks) => (Object.assign(Object.assign({}, feedbacks), { formattedDate: (0, moment_1.default)(feedbacks.date).format("DD-MM-YYYY") })));
+            const newData = Object.assign(Object.assign({}, formattedRideDate), { formattedFeedbacks });
+            console.log(newData);
+            res.json(newData);
+        }
     }),
     verifyDriver: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const id = req.query.id;
@@ -401,6 +408,28 @@ exports.default = {
         }
         catch (error) {
             res.status(500).json(error.message);
+        }
+    }),
+    feedbacks: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { driver_id } = req.query;
+        const driverData = yield driver_1.default.findById(driver_id);
+        if (driverData) {
+            const formattedRideDate = Object.assign({}, driverData === null || driverData === void 0 ? void 0 : driverData.toObject());
+            const formattedFeedbacks = formattedRideDate === null || formattedRideDate === void 0 ? void 0 : formattedRideDate.feedbacks.map((feedbacks) => (Object.assign(Object.assign({}, feedbacks), { formattedDate: (0, moment_1.default)(feedbacks.date).format("DD-MM-YYYY") })));
+            // const newData ={...formattedFeedbacks}
+            console.log(formattedFeedbacks);
+            res.json(formattedFeedbacks);
+        }
+    }),
+    getDriverRides: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { driver_id } = req.query;
+        const rideData = yield ride_1.default.find({ driver_id: driver_id }).sort({ date: -1 });
+        if (rideData) {
+            const formattedData = rideData.map((ride) => (Object.assign(Object.assign({}, ride.toObject()), { date: (0, moment_1.default)(ride.date).format("dddd, DD-MM-YYYY") })));
+            res.json(formattedData);
+        }
+        else {
+            res.status(500).json({ message: "Soemthing Internal Error" });
         }
     }),
 };

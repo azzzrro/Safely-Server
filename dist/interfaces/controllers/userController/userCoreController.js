@@ -24,7 +24,12 @@ exports.default = {
         const rideData = yield ride_1.default.findOne({ ride_id: rideId });
         if (rideData) {
             const driverData = yield driver_1.default.findOne({ _id: rideData.driver_id });
-            res.json({ rideData, driverData });
+            if (driverData) {
+                const formattedRideDate = Object.assign({}, driverData === null || driverData === void 0 ? void 0 : driverData.toObject());
+                const formattedFeedbacks = formattedRideDate === null || formattedRideDate === void 0 ? void 0 : formattedRideDate.feedbacks.map((feedbacks) => (Object.assign(Object.assign({}, feedbacks), { formattedDate: (0, moment_1.default)(feedbacks.date).format("DD-MM-YYYY") })));
+                const newData = Object.assign(Object.assign({}, formattedRideDate), { formattedFeedbacks });
+                res.json({ rideData, driverData: newData });
+            }
         }
         else {
             res.json({ message: "Something error" });
@@ -41,7 +46,7 @@ exports.default = {
         if (userData && driverData) {
             console.log("undalloooo");
             console.log("heeeeee");
-            if (paymentMode === "COD") {
+            if (paymentMode === "Cash in hand") {
                 try {
                     yield driver_1.default.findByIdAndUpdate(driverId, {
                         $inc: {
@@ -207,6 +212,7 @@ exports.default = {
     getAllrides: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { user_id } = req.query;
         const rideData = yield ride_1.default.find({ user_id: user_id }).sort({ date: -1 });
+        console.log(rideData);
         if (rideData) {
             const formattedData = rideData.map((ride) => (Object.assign(Object.assign({}, ride.toObject()), { date: (0, moment_1.default)(ride.date).format("dddd, DD-MM-YYYY") })));
             res.json(formattedData);
@@ -238,10 +244,18 @@ exports.default = {
                     feedback: feedback,
                 },
             }, { new: true });
+            const newFeedback = {
+                feedback: feedback,
+                rating: rating,
+                date: Date.now()
+            };
             yield driver_1.default.findByIdAndUpdate(rideData === null || rideData === void 0 ? void 0 : rideData.driver_id, {
                 $inc: {
-                    ratings: 1,
+                    totalRatings: 1,
                 },
+                $push: {
+                    feedbacks: newFeedback
+                }
             });
             res.json({ message: "Success" });
         }

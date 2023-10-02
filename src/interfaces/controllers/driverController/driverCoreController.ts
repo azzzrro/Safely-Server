@@ -32,7 +32,13 @@ export default {
     getRideDetails: async (req: Request, res: Response) => {
         const { ride_id } = req.query;
         const rideData = await ride.findOne({ ride_id: ride_id });
-        res.json(rideData);
+        if(rideData){
+            const formattedDate = moment(rideData.date).format("dddd, DD-MM-YYYY")
+            const formattedRideData = { ...rideData.toObject(), formattedDate };
+            res.json(formattedRideData);
+        }else{
+            res.status(500).json({message:"Soemthing Internal Error"})
+        }
     },
 
     dashboardData: async (req: Request, res: Response) => {
@@ -135,7 +141,7 @@ export default {
                 ])
                 .exec();
 
-            res.json({ chartData, pieChartData, driverData, CurrentMonthRides: count[0].totalCount });
+            res.json({ chartData, pieChartData, driverData, CurrentMonthRides: count[0]?.totalCount });
         } catch (error) {
             res.status(500).json((error as Error).message);
         }
@@ -144,7 +150,16 @@ export default {
     getDriverData: async (req: Request, res: Response) => {
         const { driver_id } = req.query;
         const driverData = await driver.findById(driver_id);
-        res.json(driverData);
+        if(driverData){
+        const formattedRideDate = {...driverData?.toObject()}
+            const formattedFeedbacks = formattedRideDate?.feedbacks.map((feedbacks)=> ({
+                ...feedbacks,
+                formattedDate:moment(feedbacks.date).format("DD-MM-YYYY")
+            }))
+            const newData ={...formattedRideDate,formattedFeedbacks}
+            console.log(newData);
+            res.json(newData);
+        }
     },
 
     profileUpdate: async (req: Request, res: Response) => {

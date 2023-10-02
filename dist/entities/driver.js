@@ -49,7 +49,7 @@ const DriverSchema = new mongoose_1.Schema({
     },
     joiningDate: {
         type: Date,
-        deafult: Date.now()
+        deafult: Date.now(),
     },
     aadhar: {
         aadharId: {
@@ -129,16 +129,29 @@ const DriverSchema = new mongoose_1.Schema({
         },
         totalEarnings: {
             type: Number,
-            default: 0
-        }
+            default: 0,
+        },
     },
     isAvailable: {
         type: Boolean,
-        default: true
+        default: true,
     },
-    ratings: {
+    totalRatings: {
         type: Number,
-        default: 0
-    }
+        default: 0,
+    },
+    feedbacks: [
+        {
+            feedback: {
+                type: String,
+            },
+            rating: {
+                type: Number,
+            },
+            date: {
+                type: Date
+            }
+        },
+    ],
 });
 exports.default = mongoose_1.default.model("Driver", DriverSchema);

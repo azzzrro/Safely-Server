@@ -12,7 +12,15 @@ export default {
         const rideData: RideDetails | null = await ride.findOne({ ride_id: rideId });
         if (rideData) {
             const driverData = await driver.findOne({ _id: rideData.driver_id });
-            res.json({ rideData, driverData });
+            if(driverData){
+                const formattedRideDate = {...driverData?.toObject()}
+                    const formattedFeedbacks = formattedRideDate?.feedbacks.map((feedbacks)=> ({
+                        ...feedbacks,
+                        formattedDate:moment(feedbacks.date).format("DD-MM-YYYY")
+                    }))
+                    const newData ={...formattedRideDate,formattedFeedbacks}
+                    res.json({ rideData, driverData:newData });
+                }
         } else {
             res.json({ message: "Something error" });
         }
@@ -35,7 +43,7 @@ export default {
             console.log("undalloooo");
             console.log("heeeeee");
 
-            if (paymentMode === "COD") {
+            if (paymentMode === "Cash in hand") {
                 try {
                     await driver.findByIdAndUpdate(driverId, {
                         $inc: {
@@ -225,6 +233,7 @@ export default {
     getAllrides: async (req: Request, res: Response) => {
         const { user_id } = req.query;
         const rideData = await ride.find({ user_id: user_id }).sort({ date: -1 });
+        console.log(rideData)
         if (rideData) {
             const formattedData = rideData.map((ride) => ({
                 ...ride.toObject(),
@@ -264,10 +273,18 @@ export default {
                 { new: true }
             );
 
+            const newFeedback = {
+                feedback : feedback,
+                rating : rating,
+                date:Date.now()
+            }
             await driver.findByIdAndUpdate(rideData?.driver_id, {
                 $inc: {
-                    ratings: 1,
+                    totalRatings : 1,
                 },
+                $push:{
+                    feedbacks : newFeedback
+                }
             });
             res.json({ message: "Success" });
         } catch (error) {

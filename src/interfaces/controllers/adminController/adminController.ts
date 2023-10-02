@@ -3,6 +3,7 @@ import driver from "../../../entities/driver";
 import { sendMail } from "../../../services/nodemailer";
 import user from "../../../entities/user";
 import ride from "../../../entities/ride";
+import moment from "moment";
 
 export default {
     adminLogin: async (req: Request, res: Response) => {
@@ -22,7 +23,16 @@ export default {
     getDriverData: async (req: Request, res: Response) => {
         const id = req.query.id;
         const response = await driver.findById(id);
-        res.json(response);
+        if(response){
+            const formattedRideDate = {...response?.toObject()}
+                const formattedFeedbacks = formattedRideDate?.feedbacks.map((feedbacks)=> ({
+                    ...feedbacks,
+                    formattedDate:moment(feedbacks.date).format("DD-MM-YYYY")
+                }))
+                const newData ={...formattedRideDate,formattedFeedbacks}
+                console.log(newData);
+                res.json(newData);
+            }
     },
 
     verifyDriver: async (req: Request, res: Response) => {
@@ -422,6 +432,36 @@ export default {
             res.json({ chardData, pieChartData, dashboardData:{totalUsers,totalDrivers,blockedUsers,blockedDrivers,newUsers,newDrivers} });
         } catch (error) {
             res.status(500).json((error as Error).message);
+        }
+    },
+
+
+    feedbacks:async (req: Request, res: Response) => {
+        const { driver_id } = req.query;
+        const driverData = await driver.findById(driver_id);
+        if(driverData){
+            const formattedRideDate = {...driverData?.toObject()}
+                const formattedFeedbacks = formattedRideDate?.feedbacks.map((feedbacks)=> ({
+                    ...feedbacks,
+                    formattedDate:moment(feedbacks.date).format("DD-MM-YYYY")
+                }))
+                // const newData ={...formattedFeedbacks}
+                console.log(formattedFeedbacks);
+                res.json(formattedFeedbacks);
+            }
+    },
+
+    getDriverRides :  async (req: Request, res: Response) => {
+        const { driver_id } = req.query;
+        const rideData = await ride.find({ driver_id: driver_id }).sort({date:-1});
+        if (rideData) {
+            const formattedData = rideData.map((ride) => ({
+                ...ride.toObject(),
+                date: moment(ride.date).format("dddd, DD-MM-YYYY"),
+            }));
+            res.json(formattedData);
+        }else{
+            res.status(500).json({message:"Soemthing Internal Error"})
         }
     },
 };
