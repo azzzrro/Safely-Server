@@ -47,7 +47,7 @@ export const setUpSocketIO = (server: HttpServer): void => {
 
     const io: SocketIOServer = new SocketIOServer(server, {
         cors: {
-            origin: "http://localhost:5173",
+            origin: "https://safely-pink.vercel.app",
             credentials: true,
         },
     });

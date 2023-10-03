@@ -153,8 +153,8 @@ export default {
                 },
             ],
             mode: "payment",
-            success_url: `http://localhost:5173/rides?rideId=${rideId}`,
-            cancel_url: "http://localhost:5173/rides",
+            success_url: `https://safely-pink.vercel.app/rides?rideId=${rideId}`,
+            cancel_url: "https://safely-pink.vercel.app/rides",
         });
 
         if (session) {
@@ -343,8 +343,8 @@ export default {
                     },
                 ],
                 mode: "payment",
-                success_url: `http://localhost:5173/profile`,
-                cancel_url: "http://localhost:5173/profile",
+                success_url: `https://safely-pink.vercel.app/profile`,
+                cancel_url: "https://safely-pink.vercel.app/profile",
             });
 
             if (session) {

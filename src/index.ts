@@ -21,7 +21,7 @@ app.use(cors())
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-const allowedOrigins = ['http://localhost:5173'];
+const allowedOrigins = ['https://safely-pink.vercel.app'];
 app.use(
   cors({
     origin: function (origin, callback) {
