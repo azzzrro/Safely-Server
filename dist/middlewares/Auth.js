@@ -21,9 +21,9 @@ exports.default = {
     }),
     verifyToken: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         var _a;
-        const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+        const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.trim().split(" ")[1];
         if (!token) {
-            res.json({ message: "Unauthorized" });
+            res.status(401).json({ message: "Unauthorized" });
         }
         else {
             try {
@@ -33,7 +33,7 @@ exports.default = {
                 next();
             }
             catch (error) {
-                res.json({ message: error.message });
+                res.status(500).json({ message: error.message });
             }
         }
     }),

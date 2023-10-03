@@ -70,7 +70,7 @@ const setUpSocketIO = (server) => {
                         .select("_id")
                         .exec();
                     const idsArray = driverIds.map((driver) => driver._id);
-                    console.log(idsArray);
+                    console.log(idsArray, "idssssArrrayyyy");
                     io.emit("newRideRequest", rideDetails, idsArray);
                 }
                 else {

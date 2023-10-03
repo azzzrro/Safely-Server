@@ -8,6 +8,7 @@ const registrationController_1 = __importDefault(require("../controllers/userCon
 const loginController_1 = __importDefault(require("../controllers/userController/loginController"));
 const multer_1 = __importDefault(require("../../middlewares/multer"));
 const userCoreController_1 = __importDefault(require("../controllers/userController/userCoreController"));
+const auth_1 = __importDefault(require("../../middlewares/auth"));
 const userRoute = (0, express_1.Router)();
 // registration
 userRoute.post('/register', registrationController_1.default.signup);
@@ -18,13 +19,13 @@ userRoute.post('/uploadUserImage', multer_1.default.single('userImage'), registr
 userRoute.post('/checkLoginUser', loginController_1.default.loginUserCheck);
 userRoute.post('/checkGoogleLoginUser', loginController_1.default.GoogleLoginUserCheck);
 //rides
-userRoute.get('/userData', userCoreController_1.default.getUserData);
-userRoute.get('/getCurrentRide', userCoreController_1.default.getCurrentRide);
-userRoute.post('/payment', userCoreController_1.default.payment);
-userRoute.post('/payment-stripe', userCoreController_1.default.paymentStripe);
-userRoute.get('/getAllrides', userCoreController_1.default.getAllrides);
-userRoute.get('/getRideDetails', userCoreController_1.default.getRideDetails);
-userRoute.post('/feedback', userCoreController_1.default.feedback);
-userRoute.post('/profileUpdate', userCoreController_1.default.profileUpdate);
-userRoute.post('/addWalletBalance', userCoreController_1.default.addbalance);
+userRoute.get('/userData', auth_1.default.verifyToken, userCoreController_1.default.getUserData);
+userRoute.get('/getCurrentRide', auth_1.default.verifyToken, userCoreController_1.default.getCurrentRide);
+userRoute.post('/payment', auth_1.default.verifyToken, userCoreController_1.default.payment);
+userRoute.post('/payment-stripe', auth_1.default.verifyToken, userCoreController_1.default.paymentStripe);
+userRoute.get('/getAllrides', auth_1.default.verifyToken, userCoreController_1.default.getAllrides);
+userRoute.get('/getRideDetails', auth_1.default.verifyToken, userCoreController_1.default.getRideDetails);
+userRoute.post('/feedback', auth_1.default.verifyToken, userCoreController_1.default.feedback);
+userRoute.post('/profileUpdate', auth_1.default.verifyToken, userCoreController_1.default.profileUpdate);
+userRoute.post('/addWalletBalance', auth_1.default.verifyToken, userCoreController_1.default.addbalance);
 exports.default = userRoute;

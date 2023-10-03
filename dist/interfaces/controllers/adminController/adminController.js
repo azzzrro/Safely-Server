@@ -17,11 +17,15 @@ const nodemailer_1 = require("../../../services/nodemailer");
 const user_1 = __importDefault(require("../../../entities/user"));
 const ride_1 = __importDefault(require("../../../entities/ride"));
 const moment_1 = __importDefault(require("moment"));
+const auth_1 = __importDefault(require("../../../middlewares/auth"));
+const mongodb_1 = require("mongodb");
 exports.default = {
     adminLogin: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { email, password } = req.body;
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASS) {
-            res.json({ message: "Success", email: process.env.ADMIN_EMAIL });
+            const token = yield auth_1.default.createToken(new mongodb_1.ObjectId());
+            console.log(token, "admin tokennn");
+            res.json({ message: "Success", email: process.env.ADMIN_EMAIL, token });
         }
         else {
             res.json({ message: "Invalid Credentials" });
@@ -371,11 +375,14 @@ exports.default = {
                 "November",
                 "December",
             ];
-            const chardData = userData.map((userItem, index) => ({
-                name: monthNames[userItem.month - 1],
-                users: userItem.userCount,
-                drivers: driverData[index].driverCount,
-            }));
+            const chardData = userData.map((userItem, index) => {
+                var _a;
+                return ({
+                    name: monthNames[userItem.month - 1],
+                    users: (userItem === null || userItem === void 0 ? void 0 : userItem.userCount) || 0,
+                    drivers: ((_a = driverData[index]) === null || _a === void 0 ? void 0 : _a.driverCount) || 0,
+                });
+            });
             const pieChartData = yield ride_1.default
                 .aggregate([
                 {

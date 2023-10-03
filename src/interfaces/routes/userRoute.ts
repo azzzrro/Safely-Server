@@ -3,6 +3,7 @@ import registrationController from "../controllers/userController/registrationCo
 import loginController from "../controllers/userController/loginController";
 import upload from "../../middlewares/multer";
 import userCoreController from "../controllers/userController/userCoreController";
+import auth from "../../middlewares/auth";
 
 const userRoute = Router()
 
@@ -17,15 +18,15 @@ userRoute.post('/checkLoginUser',loginController.loginUserCheck)
 userRoute.post('/checkGoogleLoginUser',loginController.GoogleLoginUserCheck)
 
 //rides
-userRoute.get('/userData',userCoreController.getUserData)
-userRoute.get('/getCurrentRide',userCoreController.getCurrentRide)
-userRoute.post('/payment',userCoreController.payment)
-userRoute.post('/payment-stripe',userCoreController.paymentStripe)
+userRoute.get('/userData',auth.verifyToken,userCoreController.getUserData)
+userRoute.get('/getCurrentRide',auth.verifyToken,userCoreController.getCurrentRide)
+userRoute.post('/payment',auth.verifyToken,userCoreController.payment)
+userRoute.post('/payment-stripe',auth.verifyToken,userCoreController.paymentStripe)
 
-userRoute.get('/getAllrides',userCoreController.getAllrides)
-userRoute.get('/getRideDetails',userCoreController.getRideDetails)
-userRoute.post('/feedback',userCoreController.feedback)
-userRoute.post('/profileUpdate',userCoreController.profileUpdate)
-userRoute.post('/addWalletBalance',userCoreController.addbalance)
+userRoute.get('/getAllrides',auth.verifyToken,userCoreController.getAllrides)
+userRoute.get('/getRideDetails',auth.verifyToken,userCoreController.getRideDetails)
+userRoute.post('/feedback',auth.verifyToken,userCoreController.feedback)
+userRoute.post('/profileUpdate',auth.verifyToken,userCoreController.profileUpdate)
+userRoute.post('/addWalletBalance',auth.verifyToken,userCoreController.addbalance)
 
 export default userRoute

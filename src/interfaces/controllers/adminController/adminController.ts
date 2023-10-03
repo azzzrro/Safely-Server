@@ -4,12 +4,16 @@ import { sendMail } from "../../../services/nodemailer";
 import user from "../../../entities/user";
 import ride from "../../../entities/ride";
 import moment from "moment";
+import auth from "../../../middlewares/auth";
+import { ObjectId } from "mongodb";
 
 export default {
     adminLogin: async (req: Request, res: Response) => {
         const { email, password } = req.body;
-        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASS) {
-            res.json({ message: "Success", email: process.env.ADMIN_EMAIL });
+        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASS) {            
+            const token = await auth.createToken(new ObjectId())
+            console.log(token,"admin tokennn");
+            res.json({ message: "Success", email: process.env.ADMIN_EMAIL,token });
         } else {
             res.json({ message: "Invalid Credentials" });
         }
@@ -395,8 +399,8 @@ export default {
 
             const chardData = userData.map((userItem, index) => ({
                 name: monthNames[userItem.month - 1],
-                users: userItem.userCount,
-                drivers: driverData[index].driverCount,
+                users: userItem?.userCount || 0,
+                drivers: driverData[index]?.driverCount || 0,
             }));
 
             const pieChartData = await ride

@@ -80,7 +80,7 @@ export const setUpSocketIO = (server: HttpServer): void => {
                         .exec();
 
                     const idsArray = driverIds.map((driver) => driver._id);
-                    console.log(idsArray);
+                    console.log(idsArray,"idssssArrrayyyy");
                     io.emit("newRideRequest", rideDetails, idsArray);
                 } else {
                     console.log(distance, "greater than 5km");

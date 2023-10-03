@@ -14,9 +14,11 @@ export default {
     },
 
     verifyToken: async (req: Request, res: Response, next: NextFunction) => {
-        const token = req.headers.authorization?.split(" ")[1];
+        
+        const token = req.headers.authorization?.trim().split(" ")[1];
+                
         if (!token) {
-            res.json({ message: "Unauthorized" });
+            res.status(401).json({ message: "Unauthorized" });
         } else {
             try {
                 const jwtSecretKey = "t9rXw5bF2mS7zQ8p";
@@ -24,7 +26,7 @@ export default {
                 req.clientId = decodedToken.clientId;
                 next();
             } catch (error) {
-                res.json({ message: (error as Error).message });
+                res.status(500).json({ message: (error as Error).message });
             }
         }
     },
