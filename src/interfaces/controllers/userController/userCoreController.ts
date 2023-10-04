@@ -12,15 +12,15 @@ export default {
         const rideData: RideDetails | null = await ride.findOne({ ride_id: rideId });
         if (rideData) {
             const driverData = await driver.findOne({ _id: rideData.driver_id });
-            if(driverData){
-                const formattedRideDate = {...driverData?.toObject()}
-                    const formattedFeedbacks = formattedRideDate?.feedbacks.map((feedbacks)=> ({
-                        ...feedbacks,
-                        formattedDate:moment(feedbacks.date).format("DD-MM-YYYY")
-                    }))
-                    const newData ={...formattedRideDate,formattedFeedbacks}
-                    res.json({ rideData, driverData:newData });
-                }
+            if (driverData) {
+                const formattedRideDate = { ...driverData?.toObject() };
+                const formattedFeedbacks = formattedRideDate?.feedbacks.map((feedbacks) => ({
+                    ...feedbacks,
+                    formattedDate: moment(feedbacks.date).format("DD-MM-YYYY"),
+                }));
+                const newData = { ...formattedRideDate, formattedFeedbacks };
+                res.json({ rideData, driverData: newData });
+            }
         } else {
             res.json({ message: "Something error" });
         }
@@ -215,32 +215,32 @@ export default {
     getUserData: async (req: Request, res: Response) => {
         const id = req.query.id;
         const response = await user.findById(id);
-        if(response){
-            const formattedDate = moment(response.joiningDate).format("dddd, DD-MM-YYYY")
+        if (response) {
+            const formattedDate = moment(response.joiningDate).format("dddd, DD-MM-YYYY");
             const formattedUserData = { ...response.toObject(), formattedDate };
-            const formattedTransactions = formattedUserData.wallet.transactions.map((transactions)=>({
+            const formattedTransactions = formattedUserData.wallet.transactions.map((transactions) => ({
                 ...transactions,
-                formattedDate:moment(transactions.date).format("dddd, DD-MM-YYYY")
-            }))
-            const newData = {...formattedUserData,formattedTransactions}
+                formattedDate: moment(transactions.date).format("dddd, DD-MM-YYYY"),
+            }));
+            const newData = { ...formattedUserData, formattedTransactions };
             res.json(newData);
-        }else{
-            res.status(500).json({message:"Soemthing Internal Error"})
+        } else {
+            res.status(500).json({ message: "Soemthing Internal Error" });
         }
     },
 
     getAllrides: async (req: Request, res: Response) => {
         const { user_id } = req.query;
         const rideData = await ride.find({ user_id: user_id }).sort({ date: -1 });
-        console.log(rideData)
+        console.log(rideData);
         if (rideData) {
             const formattedData = rideData.map((ride) => ({
                 ...ride.toObject(),
                 date: moment(ride.date).format("dddd, DD-MM-YYYY"),
             }));
             res.json(formattedData);
-        }else{
-            res.status(500).json({message:"Soemthing Internal Error"})
+        } else {
+            res.status(500).json({ message: "Soemthing Internal Error" });
         }
     },
 
@@ -248,12 +248,12 @@ export default {
         const { ride_id } = req.query;
         const rideData = await ride.findOne({ ride_id: ride_id });
         const driverData = await driver.findById(rideData?.driver_id);
-        if(rideData){
-            const formattedDate = moment(rideData.date).format("dddd, DD-MM-YYYY")
+        if (rideData) {
+            const formattedDate = moment(rideData.date).format("dddd, DD-MM-YYYY");
             const formattedRideData = { ...rideData.toObject(), formattedDate };
-            res.json({ rideData:formattedRideData, driverData });
-        }else{
-            res.status(500).json({message:"Soemthing Internal Error"})
+            res.json({ rideData: formattedRideData, driverData });
+        } else {
+            res.status(500).json({ message: "Soemthing Internal Error" });
         }
     },
 
@@ -273,17 +273,17 @@ export default {
             );
 
             const newFeedback = {
-                feedback : feedback,
-                rating : rating,
-                date:Date.now()
-            }
+                feedback: feedback,
+                rating: rating,
+                date: Date.now(),
+            };
             await driver.findByIdAndUpdate(rideData?.driver_id, {
                 $inc: {
-                    totalRatings : 1,
+                    totalRatings: 1,
                 },
-                $push:{
-                    feedbacks : newFeedback
-                }
+                $push: {
+                    feedbacks: newFeedback,
+                },
             });
             res.json({ message: "Success" });
         } catch (error) {
@@ -323,8 +323,7 @@ export default {
             const { balance } = req.body;
             const user_id = req.query.user_id;
 
-            console.log(balance,user_id);
-            
+            console.log(balance, user_id);
 
             const stripe = new Stripe(process?.env.STRIPE_SECRET_KEY as string, {
                 apiVersion: "2023-08-16",
@@ -350,11 +349,11 @@ export default {
             });
 
             if (session) {
-                console.log(session,"undddd");
-                
+                console.log(session, "undddd");
+
                 const userData = await user.findById(user_id);
-                console.log(userData,"userrrr");
-                
+                console.log(userData, "userrrr");
+
                 if (userData?.wallet.balance) {
                     const userNewBalance = userData.wallet.balance + Number(balance);
                     const userTransaction = {
@@ -364,8 +363,7 @@ export default {
                         status: "Credit",
                     };
 
-                    console.log(userNewBalance,userTransaction);
-                    
+                    console.log(userNewBalance, userTransaction);
 
                     await user.findByIdAndUpdate(user_id, {
                         $set: {
@@ -376,9 +374,11 @@ export default {
                         },
                     });
 
-                    console.log(session.id,"iddd");
+                    console.log(session.id, "iddd");
 
                     res.json({ id: session.id });
+                } else {
+                    console.log(userData?.wallet.balance, "else waletttt");
                 }
             } else {
                 res.json({ message: "No session" });
