@@ -323,8 +323,6 @@ export default {
             const { balance } = req.body;
             const user_id = req.query.user_id;
 
-            console.log(balance, user_id);
-
             const stripe = new Stripe(process?.env.STRIPE_SECRET_KEY as string, {
                 apiVersion: "2023-08-16",
             });
@@ -349,10 +347,8 @@ export default {
             });
 
             if (session) {
-                console.log(session, "undddd");
 
                 const userData = await user.findById(user_id);
-                console.log(userData, "userrrr");
 
                 if (userData) {
                     const userNewBalance = userData.wallet.balance + Number(balance);
@@ -363,8 +359,6 @@ export default {
                         status: "Credit",
                     };
 
-                    console.log(userNewBalance, userTransaction);
-
                     await user.findByIdAndUpdate(user_id, {
                         $set: {
                             "wallet.balance": userNewBalance,
@@ -373,8 +367,6 @@ export default {
                             "wallet.transactions": userTransaction,
                         },
                     });
-
-                    console.log(session.id, "iddd");
 
                     res.json({ id: session.id });
                 } else {
