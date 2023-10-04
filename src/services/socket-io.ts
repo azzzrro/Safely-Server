@@ -57,7 +57,6 @@ export const setUpSocketIO = (server: HttpServer): void => {
 
         socket.on("getNearByDrivers", async (rideData: RideDetails) => {
             rideDetails = rideData;
-            console.log(rideDetails, "ride-details");
             io.emit("getNearByDrivers");
         });
 
@@ -80,7 +79,6 @@ export const setUpSocketIO = (server: HttpServer): void => {
                         .exec();
 
                     const idsArray = driverIds.map((driver) => driver._id);
-                    console.log(idsArray,"idssssArrrayyyy");
                     io.emit("newRideRequest", rideDetails, idsArray);
                 } else {
                     console.log(distance, "greater than 5km");
@@ -106,14 +104,11 @@ export const setUpSocketIO = (server: HttpServer): void => {
                 isAvailable:false
             })
 
-            console.log(response, "response after saving");
-
             io.emit("driverConfirmation", response.ride_id);
             io.emit("userConfirmation", response.ride_id);
         });
 
         socket.on("verifyRide", async (pin: number) => {
-            console.log("inside verify",pin);
             const response = await Ride.findOneAndUpdate(
                 { pin: pin},
                 {
@@ -125,7 +120,6 @@ export const setUpSocketIO = (server: HttpServer): void => {
                     new: true,
                 }
             );
-            console.log(response,"response");
             if(response){
                 io.emit("rideConfirmed")
             }else{
@@ -134,7 +128,6 @@ export const setUpSocketIO = (server: HttpServer): void => {
         });
 
         socket.on("driverRideFinish",()=>{
-            console.log("server response getting")
             io.emit("userPaymentPage")
         })
 
