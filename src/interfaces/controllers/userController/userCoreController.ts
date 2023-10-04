@@ -354,7 +354,7 @@ export default {
                 const userData = await user.findById(user_id);
                 console.log(userData, "userrrr");
 
-                if (userData?.wallet.balance) {
+                if (userData) {
                     const userNewBalance = userData.wallet.balance + Number(balance);
                     const userTransaction = {
                         date: new Date(),
@@ -378,10 +378,10 @@ export default {
 
                     res.json({ id: session.id });
                 } else {
-                    console.log(userData?.wallet.balance, "else waletttt");
+                    res.status(500);
                 }
             } else {
-                res.json({ message: "No session" });
+                res.status(500).json({ message: "No session" });
             }
         } catch (error) {
             res.status(500).json((error as Error).message);
