@@ -353,6 +353,8 @@ export default {
                 console.log(session,"undddd");
                 
                 const userData = await user.findById(user_id);
+                console.log(userData,"userrrr");
+                
                 if (userData?.wallet.balance) {
                     const userNewBalance = userData.wallet.balance + Number(balance);
                     const userTransaction = {
