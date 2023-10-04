@@ -17,27 +17,27 @@ export default {
 
     getAllrides: async (req: Request, res: Response) => {
         const { driver_id } = req.query;
-        const rideData = await ride.find({ driver_id: driver_id }).sort({date:-1});
+        const rideData = await ride.find({ driver_id: driver_id }).sort({ date: -1 });
         if (rideData) {
             const formattedData = rideData.map((ride) => ({
                 ...ride.toObject(),
                 date: moment(ride.date).format("dddd, DD-MM-YYYY"),
             }));
             res.json(formattedData);
-        }else{
-            res.status(500).json({message:"Soemthing Internal Error"})
+        } else {
+            res.status(500).json({ message: "Soemthing Internal Error" });
         }
     },
 
     getRideDetails: async (req: Request, res: Response) => {
         const { ride_id } = req.query;
         const rideData = await ride.findOne({ ride_id: ride_id });
-        if(rideData){
-            const formattedDate = moment(rideData.date).format("dddd, DD-MM-YYYY")
+        if (rideData) {
+            const formattedDate = moment(rideData.date).format("dddd, DD-MM-YYYY");
             const formattedRideData = { ...rideData.toObject(), formattedDate };
             res.json(formattedRideData);
-        }else{
-            res.status(500).json({message:"Soemthing Internal Error"})
+        } else {
+            res.status(500).json({ message: "Soemthing Internal Error" });
         }
     },
 
@@ -150,15 +150,17 @@ export default {
     getDriverData: async (req: Request, res: Response) => {
         const { driver_id } = req.query;
         const driverData = await driver.findById(driver_id);
-        if(driverData){
-        const formattedRideDate = {...driverData?.toObject()}
-            const formattedFeedbacks = formattedRideDate?.feedbacks.map((feedbacks)=> ({
+        if (driverData) {
+            const formattedDate = moment(driverData.joiningDate).format("dddd, DD-MM-YYYY");
+            const formattedDriverData = { ...driverData?.toObject(), formattedDate };
+            const formattedFeedbacks = formattedDriverData?.feedbacks.map((feedbacks) => ({
                 ...feedbacks,
-                formattedDate:moment(feedbacks.date).format("DD-MM-YYYY")
-            }))
-            const newData ={...formattedRideDate,formattedFeedbacks}
-            console.log(newData);
+                formattedDate: moment(feedbacks.date).format("DD-MM-YYYY"),
+            }));
+            const newData = { ...formattedDriverData, formattedFeedbacks };
             res.json(newData);
+        } else {
+            res.status(500).json({ message: "Soemthing Internal Error" });
         }
     },
 
@@ -193,9 +195,9 @@ export default {
 
     updateStatus: async (req: Request, res: Response) => {
         const { driver_id } = req.query;
-        console.log("helloo",driver_id)
+        console.log("helloo", driver_id);
         try {
-            const data = await driver.findById(driver_id)
+            const data = await driver.findById(driver_id);
             const driverData = await driver.findByIdAndUpdate(
                 driver_id,
                 {

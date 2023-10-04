@@ -217,13 +217,12 @@ export default {
         const response = await user.findById(id);
         if(response){
             const formattedDate = moment(response.joiningDate).format("dddd, DD-MM-YYYY")
-            const formattedRideData = { ...response.toObject(), formattedDate };
-            const formattedTransactions = formattedRideData.wallet.transactions.map((transactions)=>({
+            const formattedUserData = { ...response.toObject(), formattedDate };
+            const formattedTransactions = formattedUserData.wallet.transactions.map((transactions)=>({
                 ...transactions,
                 formattedDate:moment(transactions.date).format("dddd, DD-MM-YYYY")
             }))
-            const newData = {...formattedRideData,formattedTransactions}
-            console.log(newData);
+            const newData = {...formattedUserData,formattedTransactions}
             res.json(newData);
         }else{
             res.status(500).json({message:"Soemthing Internal Error"})
