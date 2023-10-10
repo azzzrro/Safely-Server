@@ -158,11 +158,9 @@ export default {
         });
 
         if (session) {
-            console.log(session, "session und");
 
             try {
                 const rideData = await ride.findOne({ ride_id: rideId });
-                console.log(rideData, "ridedataa");
                 const userId = new ObjectId(rideData?.user_id);
                 const driverId = new ObjectId(rideData?.driver_id);
 
@@ -207,7 +205,6 @@ export default {
                 res.status(500).json((error as Error).message);
             }
         } else {
-            console.log("no session");
             res.json({ message: "No session" });
         }
     },
@@ -232,7 +229,6 @@ export default {
     getAllrides: async (req: Request, res: Response) => {
         const { user_id } = req.query;
         const rideData = await ride.find({ user_id: user_id }).sort({ date: -1 });
-        console.log(rideData);
         if (rideData) {
             const formattedData = rideData.map((ride) => ({
                 ...ride.toObject(),
