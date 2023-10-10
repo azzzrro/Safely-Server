@@ -105,8 +105,11 @@ export const setUpSocketIO = (server: HttpServer): void => {
             })
 
             io.emit("driverConfirmation", response.ride_id);
-            io.emit("userConfirmation", response.ride_id);
         });
+
+        socket.on("forUser",async (ride_id) => {
+            io.emit("userConfirmation", ride_id);
+        })
 
         socket.on("verifyRide", async (pin: number) => {
             const response = await Ride.findOneAndUpdate(
